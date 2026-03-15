@@ -1,0 +1,96 @@
+{
+  "players": {
+    "user": {
+      "id": "user",
+      "slug": "nischal",
+      "name": "Nischal",
+      "style": "High-risk captain swings",
+      "bio": "Ceiling chaser. Differential addict. Fully willing to captain chaos if the upside is there.",
+      "totalPoints": 842,
+      "summary": "Survived on one differential masterstroke yesterday.",
+      "captain": "Suryakumar Yadav",
+      "teamName": "Nischal XI",
+      "team": [
+        { "name": "Ruturaj Gaikwad", "role": "Batter" },
+        { "name": "Suryakumar Yadav", "role": "Captain" },
+        { "name": "Hardik Pandya", "role": "All-rounder" },
+        { "name": "Shivam Dube", "role": "All-rounder" },
+        { "name": "Jasprit Bumrah", "role": "Bowler" },
+        { "name": "Matheesha Pathirana", "role": "Bowler" }
+      ]
+    },
+    "friend": {
+      "id": "friend",
+      "slug": "shreyas",
+      "name": "Shreyas",
+      "style": "Template picks, zero fear",
+      "bio": "The steady hand in the rivalry. Likes core picks, safe routes, and quietly collecting points.",
+      "totalPoints": 816,
+      "summary": "Stayed close by backing the safer core.",
+      "captain": "Ruturaj Gaikwad",
+      "teamName": "Shreyas XI",
+      "team": [
+        { "name": "Ruturaj Gaikwad", "role": "Captain" },
+        { "name": "Ishan Kishan", "role": "Wicketkeeper" },
+        { "name": "Tilak Varma", "role": "Batter" },
+        { "name": "Ravindra Jadeja", "role": "All-rounder" },
+        { "name": "Deepak Chahar", "role": "Bowler" },
+        { "name": "Jasprit Bumrah", "role": "Bowler" }
+      ]
+    }
+  },
+  "fixture": "MI vs CSK",
+  "journal": {
+    "date": "15 March 2026"
+  },
+  "posts": [
+    {
+      "id": "post-001",
+      "slug": "sky-captaincy-could-break-the-template",
+      "authorSlug": "nischal",
+      "title": "Sky captaincy could break the template",
+      "date": "2026-03-15",
+      "result": "Projected win",
+      "summary": "Backed Suryakumar for pure upside and leaned into a Mumbai-heavy core to try stretching the overall lead.",
+      "content": "This was one of those nights where safety felt like surrender. I knew Shreyas would sit on the reliable captain route, so I leaned into the volatility and gave the armband to Sky. If Mumbai's middle order clicks, the lead grows and the banter gets unbearable.",
+      "tags": ["Captain punt", "High variance", "MI stack"]
+    },
+    {
+      "id": "post-002",
+      "slug": "template-trust-versus-ceiling-chase",
+      "authorSlug": "shreyas",
+      "title": "Template trust versus ceiling chase",
+      "date": "2026-03-15",
+      "result": "Projected loss",
+      "summary": "Played it steady with Ruturaj captain and trusted the reliable core to punish an over-aggressive opponent.",
+      "content": "The whole point of a rivalry is forcing the other person to overextend. Nischal has chased the explosion, and I am happy sitting on strong, repeatable points. If Ruturaj does his job and the all-rounders chip in, this gets very uncomfortable for him very quickly.",
+      "tags": ["Safe captain", "Core picks", "Control"]
+    },
+    {
+      "id": "post-003",
+      "slug": "differential-rescue-mission-worked",
+      "authorSlug": "nischal",
+      "title": "Differential rescue mission worked",
+      "date": "2026-03-14",
+      "result": "Won by 11 pts",
+      "summary": "A late bowling differential flipped a rough night into a narrow win and gave the rivalry a little extra heat.",
+      "content": "This matchup looked cooked for most of the night. Then one differential bowler ripped through the order, and suddenly the entire week changed. These are the nights that make fantasy feel worth the stress.",
+      "tags": ["Differential hit", "Bowling return", "Clutch"]
+    },
+    {
+      "id": "post-004",
+      "slug": "patience-finally-paid-off",
+      "authorSlug": "shreyas",
+      "title": "Patience finally paid off",
+      "date": "2026-03-13",
+      "result": "Won by 7 pts",
+      "summary": "Stayed disciplined, avoided the obvious trap pick, and let the all-rounders quietly do the damage.",
+      "content": "Not every win needs a miracle. Sometimes the correct move is refusing the flashy option and letting structure beat adrenaline. This one was a reminder that calm lineups can still land a punch.",
+      "tags": ["Safe win", "All-rounders", "Discipline"]
+    }
+  ],
+  "publishing": {
+    "owners": ["Nischal", "Shreyas"],
+    "method": "Only signed-in owners can use the dashboard. Public visitors can read the posts but cannot create or edit anything."
+  }
+}

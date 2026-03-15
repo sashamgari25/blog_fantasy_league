@@ -1,0 +1,170 @@
+import Link from "next/link";
+import { getLeagueData, sortPosts } from "@/lib/db";
+import { extractFirstImageUrl } from "@/lib/posts";
+import { SiteShell, TopNav } from "@/components/site-shell";
+
+export default async function HomePage() {
+  const data = getLeagueData();
+  const posts = sortPosts(data.posts);
+  const user = data.players.user;
+  const friend = data.players.friend;
+  const lead = user.totalPoints - friend.totalPoints;
+  const leader = lead === 0 ? "Level" : lead > 0 ? user.name : friend.name;
+
+  return (
+    <SiteShell>
+      <header className="hero">
+        <TopNav />
+        <div className="hero-grid">
+          <div>
+            <p className="eyebrow">Daily rivalry diary</p>
+            <h2 className="headline" style={{ fontSize: "clamp(2.1rem, 5vw, 4rem)" }}>
+              AN IPL FANTASY STORY, 2 FRIENDS, 1 WINNER
+            </h2>
+            <p className="subhead">
+              Follow both managers, read every post, and track the live race for bragging rights with private author publishing
+              and public reading.
+            </p>
+            <div className="meta-row">
+              <Link className="buttonGhost" href="/login">
+                Author login
+              </Link>
+              <Link className="buttonGhost" href="/history/nischal">
+                Read Nischal&apos;s archive
+              </Link>
+            </div>
+          </div>
+          <div className="player-card">
+            <p className="eyebrow">Rivalry status</p>
+            <div className="score-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <div>
+                <span className="meta-label">Leader</span>
+                <h3 style={{ margin: "8px 0" }}>{leader}</h3>
+              </div>
+              <div>
+                <span className="meta-label">Lead margin</span>
+                <h3 style={{ margin: "8px 0" }}>{lead === 0 ? "0 pts" : `${Math.abs(lead)} pts`}</h3>
+              </div>
+              <div>
+                <span className="meta-label">Next fixture</span>
+                <strong>{data.fixture}</strong>
+              </div>
+              <div>
+                <span className="meta-label">Owners</span>
+                <strong>{data.publishing.owners.join(" and ")}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="stack">
+        <section className="panel">
+          <div className="section-header">
+            <p className="eyebrow">Live scoreboard</p>
+            <h2 className="section-title">Today&apos;s battle</h2>
+          </div>
+          <div className="score-grid">
+            <article className="score-card accent">
+              <p className="meta-label">{user.name}</p>
+              <h3 className="score-value">{user.totalPoints}</h3>
+              <p className="card-copy">{user.summary}</p>
+            </article>
+            <article className="score-card">
+              <p className="meta-label">{friend.name}</p>
+              <h3 className="score-value">{friend.totalPoints}</h3>
+              <p className="card-copy">{friend.summary}</p>
+            </article>
+            <article className="score-card">
+              <p className="meta-label">Current round</p>
+              <h3 style={{ margin: "8px 0 10px" }}>{data.fixture}</h3>
+              <p className="card-copy">Matchday date: {data.journal.date}</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="section-header">
+            <p className="eyebrow">Managers</p>
+            <h2 className="section-title">Both sides of the rivalry</h2>
+          </div>
+          <div className="card-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+            {[user, friend].map((player) => (
+              <article className="post-card" key={player.slug}>
+                <div>
+                  <p className="eyebrow">{player.teamName}</p>
+                  <h3>{player.name}</h3>
+                  <p className="card-copy">{player.bio}</p>
+                </div>
+                <div className="meta-row">
+                  <span className="meta-chip">{player.style}</span>
+                  <span className="meta-chip">Captain: {player.captain}</span>
+                </div>
+                <ul className="list">
+                  {player.team.map((member) => (
+                    <li key={`${player.slug}-${member.name}`}>
+                      <span>{member.name}</span>
+                      <span className="meta-label">{member.role}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link className="buttonGhost" href={`/history/${player.slug}`}>
+                  View full history
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="section-header">
+            <p className="eyebrow">Latest posts</p>
+            <h2 className="section-title">Every update gets its own page</h2>
+          </div>
+          <div className="timeline-grid">
+            {posts.map((post) => {
+              const author = Object.values(data.players).find((player) => player.slug === post.authorSlug);
+              const previewImage = extractFirstImageUrl(post.content, post.imageUrl || "");
+              return (
+                <article className="timeline-card" key={post.id}>
+                  <div className="meta-row">
+                    <span className="meta-chip">{post.date}</span>
+                    <span className="meta-chip">{author?.name}</span>
+                    <span className="meta-chip">{post.result}</span>
+                  </div>
+                  <div>
+                    <h3>{post.title}</h3>
+                    <p>{post.summary}</p>
+                  </div>
+                  {previewImage ? (
+                    <img
+                      src={previewImage}
+                      alt={post.title}
+                      style={{
+                        width: "100%",
+                        aspectRatio: "16 / 9",
+                        objectFit: "cover",
+                        borderRadius: 18,
+                        border: "1px solid rgba(255,255,255,0.08)"
+                      }}
+                    />
+                  ) : null}
+                  <div className="tag-row">
+                    {post.tags.map((tag) => (
+                      <span className="tag" key={tag}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <Link className="buttonGhost" href={`/posts/${post.slug}`}>
+                    Read post
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      </main>
+    </SiteShell>
+  );
+}
