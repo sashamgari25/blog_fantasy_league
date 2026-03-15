@@ -25,14 +25,6 @@ export default async function HomePage() {
               Follow both managers, read every post, and track the live race for bragging rights with private author publishing
               and public reading.
             </p>
-            <div className="meta-row">
-              <Link className="buttonGhost" href="/login">
-                Author login
-              </Link>
-              <Link className="buttonGhost" href="/history/nischal">
-                Read Nischal&apos;s archive
-              </Link>
-            </div>
           </div>
           <div className="player-card">
             <p className="eyebrow">Rivalry status</p>
