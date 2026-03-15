@@ -399,6 +399,124 @@ textarea {
   }
 
   .nav-links {
-    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .shell {
+    width: min(100% - 20px, 1180px);
+    padding: 16px 0 48px;
+  }
+
+  .hero,
+  .panel {
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .hero-grid {
+    margin-top: 20px;
+    gap: 16px;
+  }
+
+  .nav {
+    gap: 16px;
+  }
+
+  .brand {
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+  }
+
+  .headline {
+    line-height: 1;
+  }
+
+  .section-title,
+  .post-title {
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .score-card,
+  .player-card,
+  .timeline-card,
+  .lineup-card,
+  .post-card,
+  .detail-card,
+  .auth-card {
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .list li {
+    grid-template-columns: 1fr;
+    display: grid;
+    gap: 6px;
+  }
+
+  .button,
+  .buttonGhost,
+  .buttonLink {
+    width: 100%;
+    padding: 13px 16px;
+  }
+
+  .meta-row,
+  .tag-row {
+    gap: 8px;
+  }
+
+  .score-value {
+    font-size: clamp(2rem, 11vw, 3rem);
+  }
+
+  .markdown-image {
+    max-height: 280px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .nav-links {
+    grid-template-columns: 1fr;
+  }
+
+  .eyebrow,
+  .meta-label {
+    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+  }
+
+  .headline {
+    font-size: clamp(1.8rem, 10vw, 2.6rem) !important;
+  }
+
+  .subhead,
+  .body-copy,
+  .card-copy,
+  .timeline-card p,
+  .post-content,
+  .muted-copy,
+  .field-help {
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+
+  .tag,
+  .meta-chip {
+    font-size: 0.78rem;
+    padding: 6px 10px;
+  }
+
+  .timeline-card img {
+    aspect-ratio: 4 / 3 !important;
   }
 }
