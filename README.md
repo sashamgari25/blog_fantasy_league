@@ -20,7 +20,8 @@ For long-term hosting, use Vercel for the app and Supabase for data plus image s
 1. Create a Supabase project.
 2. Run the SQL in `supabase/schema.sql` in the Supabase SQL editor.
 3. Create a public storage bucket called `post-images`.
-4. Seed your initial data by copying rows from `data/league.json` into the Supabase tables, or keep using the local fallback until you are ready to migrate manually.
+4. Seed your initial data:
+   - run `npm run seed:supabase`
 5. Add these environment variables in both local `.env.local` and Vercel:
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
