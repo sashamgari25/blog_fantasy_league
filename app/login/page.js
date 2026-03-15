@@ -9,7 +9,7 @@ export default async function LoginPage() {
     redirect("/dashboard");
   }
 
-  const authors = getAllowedAuthors();
+  const authors = await getAllowedAuthors();
 
   return (
     <SiteShell>

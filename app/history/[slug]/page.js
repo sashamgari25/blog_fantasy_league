@@ -5,8 +5,7 @@ import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const data = getLeagueData();
-  const player = getPlayerBySlug(slug);
+  const player = await getPlayerBySlug(slug);
 
   if (!player) {
     return {};
@@ -20,8 +19,8 @@ export async function generateMetadata({ params }) {
 
 export default async function HistoryPage({ params }) {
   const { slug } = await params;
-  const data = getLeagueData();
-  const player = getPlayerBySlug(slug);
+  const data = await getLeagueData();
+  const player = await getPlayerBySlug(slug);
 
   if (!player) {
     notFound();

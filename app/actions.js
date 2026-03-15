@@ -13,12 +13,12 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
-function buildUniqueSlug(title) {
+async function buildUniqueSlug(title) {
   const base = slugify(title);
   let candidate = base;
   let index = 2;
 
-  while (getPostBySlug(candidate)) {
+  while (await getPostBySlug(candidate)) {
     candidate = `${base}-${index}`;
     index += 1;
   }
@@ -30,7 +30,7 @@ export async function loginAction(_prevState, formData) {
   const author = formData.get("author")?.toString().trim() || "";
   const password = formData.get("password")?.toString() || "";
 
-  const user = authenticateUser(author, password);
+  const user = await authenticateUser(author, password);
   if (!user) {
     return { error: "Incorrect username or password." };
   }
@@ -46,7 +46,7 @@ export async function logoutAction() {
 
 export async function createPostAction(_prevState, formData) {
   const session = await requireSession();
-  const data = getLeagueData();
+  const data = await getLeagueData();
   const title = formData.get("title")?.toString().trim() || "";
   const summary = formData.get("summary")?.toString().trim() || "";
   const content = formData.get("content")?.toString().trim() || "";
@@ -70,7 +70,7 @@ export async function createPostAction(_prevState, formData) {
 
   const post = {
     id: `post-${Date.now()}`,
-    slug: buildUniqueSlug(title),
+    slug: await buildUniqueSlug(title),
     authorSlug: author.slug,
     title,
     date: new Date().toISOString().slice(0, 10),
@@ -91,7 +91,7 @@ export async function createPostAction(_prevState, formData) {
 
 export async function updateOverviewAction(_prevState, formData) {
   await requireSession();
-  const data = getLeagueData();
+  const data = await getLeagueData();
 
   const nextPlayers = Object.fromEntries(
     Object.entries(data.players).map(([key, player]) => [
@@ -157,8 +157,8 @@ export async function updatePostAction(_prevState, formData) {
     return { error: "Fill in all post fields before saving." };
   }
 
-  const nextSlug = originalSlug === slugify(title) ? originalSlug : buildUniqueSlug(title);
-  const updated = updatePost(postId, {
+  const nextSlug = originalSlug === slugify(title) ? originalSlug : await buildUniqueSlug(title);
+  const updated = await updatePost(postId, {
     slug: nextSlug,
     title,
     date,
@@ -186,7 +186,7 @@ export async function deletePostAction(_prevState, formData) {
     return { error: "Missing post id." };
   }
 
-  const deleted = deletePost(postId);
+  const deleted = await deletePost(postId);
   if (!deleted) {
     return { error: "Post not found." };
   }

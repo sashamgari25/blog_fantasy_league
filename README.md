@@ -11,6 +11,36 @@ A finished-up Next.js app for your IPL fantasy rivalry site. It has:
 - local multi-image uploads for articles
 - Docker support
 
+## Vercel + Supabase
+
+For long-term hosting, use Vercel for the app and Supabase for data plus image storage.
+
+### Supabase setup
+
+1. Create a Supabase project.
+2. Run the SQL in `supabase/schema.sql` in the Supabase SQL editor.
+3. Create a public storage bucket called `post-images`.
+4. Seed your initial data by copying rows from `data/league.json` into the Supabase tables, or keep using the local fallback until you are ready to migrate manually.
+5. Add these environment variables in both local `.env.local` and Vercel:
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_STORAGE_BUCKET`
+   - `SESSION_SECRET`
+   - `NISCHAL_PASSWORD`
+   - `SHREYAS_PASSWORD`
+   - `NEXT_PUBLIC_SITE_URL`
+
+### Vercel setup
+
+1. Push this repo to GitHub.
+2. Import the repo into Vercel.
+3. Add the same environment variables in the Vercel project settings.
+4. Set the production domain URL into `NEXT_PUBLIC_SITE_URL`.
+5. Deploy.
+
+When Supabase env vars are present, the app will use Supabase instead of local SQLite/filesystem storage.
+
 ## Stack
 
 - Next.js app router

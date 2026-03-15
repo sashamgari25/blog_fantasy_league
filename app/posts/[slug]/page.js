@@ -6,8 +6,7 @@ import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const data = getLeagueData();
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return {};
@@ -21,8 +20,8 @@ export async function generateMetadata({ params }) {
 
 export default async function PostPage({ params }) {
   const { slug } = await params;
-  const data = getLeagueData();
-  const post = getPostBySlug(slug);
+  const data = await getLeagueData();
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();

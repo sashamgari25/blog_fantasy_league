@@ -6,7 +6,7 @@ import { getLeagueData, sortPosts } from "@/lib/db";
 
 export default async function DashboardPage() {
   const session = await requireSession();
-  const data = getLeagueData();
+  const data = await getLeagueData();
   const posts = sortPosts(data.posts).slice(0, 6);
 
   return (

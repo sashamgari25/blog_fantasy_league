@@ -4,7 +4,7 @@ import { extractFirstImageUrl } from "@/lib/posts";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export default async function HomePage() {
-  const data = getLeagueData();
+  const data = await getLeagueData();
   const posts = sortPosts(data.posts);
   const user = data.players.user;
   const friend = data.players.friend;
