@@ -1,14 +1,11 @@
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
-import { getSession } from "@/lib/auth";
+import { requireAuthorSession } from "@/lib/auth";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(request) {
-  const session = await getSession();
-  if (!session) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const session = await requireAuthorSession();
 
   const formData = await request.formData();
   const files = formData.getAll("files").filter((value) => value instanceof File);

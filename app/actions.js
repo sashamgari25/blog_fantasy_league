@@ -2,8 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addPost, deletePost, getLeagueData, getPostBySlug, updateLeagueOverview, updatePost } from "@/lib/db";
-import { authenticateUser, createSession, destroySession, requireSession } from "@/lib/auth";
+import {
+  addComment,
+  addNotifications,
+  addPost,
+  createReaderAccount,
+  deletePost,
+  getCommentById,
+  getLeagueData,
+  getUsersByUsernames,
+  getPostBySlug,
+  updateLeagueOverview,
+  updatePost
+} from "@/lib/db";
+import { authenticateReader, authenticateUser, createSession, destroySession, getSession, requireAuthorSession } from "@/lib/auth";
 
 function slugify(value) {
   return value
@@ -26,6 +38,15 @@ async function buildUniqueSlug(title) {
   return candidate;
 }
 
+function extractMentionUsernames(value) {
+  const matches = value.match(/(^|\s)@([a-z0-9_]+)/gi) || [];
+  return [...new Set(matches.map((match) => match.trim().slice(1).toLowerCase()))];
+}
+
+function summarizeComment(value) {
+  return value.length > 120 ? `${value.slice(0, 117)}...` : value;
+}
+
 export async function loginAction(_prevState, formData) {
   const author = formData.get("author")?.toString().trim() || "";
   const password = formData.get("password")?.toString() || "";
@@ -39,13 +60,45 @@ export async function loginAction(_prevState, formData) {
   redirect("/dashboard");
 }
 
+export async function readerLoginAction(_prevState, formData) {
+  const username = formData.get("username")?.toString().trim().toLowerCase() || "";
+  const password = formData.get("password")?.toString() || "";
+
+  const user = await authenticateReader(username, password);
+  if (!user) {
+    return { error: "Incorrect username or password." };
+  }
+
+  await createSession(user);
+  redirect("/");
+}
+
+export async function readerSignupAction(_prevState, formData) {
+  const name = formData.get("name")?.toString().trim() || "";
+  const username = formData.get("username")?.toString().trim().toLowerCase() || "";
+  const email = formData.get("email")?.toString().trim() || "";
+  const password = formData.get("password")?.toString() || "";
+
+  if (!name || !username || !password) {
+    return { error: "Fill in your display name, username, and password." };
+  }
+
+  try {
+    const user = await createReaderAccount({ name, username, email, password });
+    await createSession(user);
+    redirect("/");
+  } catch (error) {
+    return { error: error.message || "Could not create your reader account." };
+  }
+}
+
 export async function logoutAction() {
   await destroySession();
   redirect("/");
 }
 
 export async function createPostAction(_prevState, formData) {
-  const session = await requireSession();
+  const session = await requireAuthorSession();
   const data = await getLeagueData();
   const title = formData.get("title")?.toString().trim() || "";
   const summary = formData.get("summary")?.toString().trim() || "";
@@ -90,7 +143,7 @@ export async function createPostAction(_prevState, formData) {
 }
 
 export async function updateOverviewAction(_prevState, formData) {
-  await requireSession();
+  await requireAuthorSession();
   const data = await getLeagueData();
 
   const nextPlayers = Object.fromEntries(
@@ -136,7 +189,7 @@ export async function updateOverviewAction(_prevState, formData) {
 }
 
 export async function updatePostAction(_prevState, formData) {
-  await requireSession();
+  await requireAuthorSession();
 
   const postId = formData.get("post-id")?.toString().trim() || "";
   const originalSlug = formData.get("original-slug")?.toString().trim() || "";
@@ -179,7 +232,7 @@ export async function updatePostAction(_prevState, formData) {
 }
 
 export async function deletePostAction(_prevState, formData) {
-  await requireSession();
+  await requireAuthorSession();
 
   const postId = formData.get("post-id")?.toString().trim() || "";
   if (!postId) {
@@ -197,4 +250,88 @@ export async function deletePostAction(_prevState, formData) {
   revalidatePath(`/history/${deleted.author_slug}`);
 
   return { success: "Post deleted." };
+}
+
+export async function addCommentAction(_prevState, formData) {
+  const postSlug = formData.get("post-slug")?.toString().trim() || "";
+  const body = formData.get("body")?.toString().trim() || "";
+  const parentCommentId = formData.get("parent-comment-id")?.toString().trim() || "";
+  const session = await getSession();
+
+  if (!postSlug || !body) {
+    return { error: "Write a comment before posting." };
+  }
+
+  const authorName = session ? session.author : "Guest";
+  const authorRole = session?.role || "guest";
+  const authorUsername = session?.username || (session?.role === "author" ? session.slug : null);
+
+  let parentComment = null;
+  if (parentCommentId) {
+    parentComment = await getCommentById(parentCommentId);
+    if (!parentComment || parentComment.postSlug !== postSlug) {
+      return { error: "Could not attach that reply to the selected comment." };
+    }
+  }
+
+  const commentId = `comment-${Date.now()}`;
+
+  await addComment({
+    id: commentId,
+    postSlug,
+    readerSlug: session?.slug || null,
+    parentCommentId: parentCommentId || null,
+    authorUsername,
+    authorRole,
+    authorName,
+    body,
+    createdAt: new Date().toISOString()
+  });
+
+  const mentionUsernames = extractMentionUsernames(body);
+  const mentionedUsers = mentionUsernames.length ? await getUsersByUsernames(mentionUsernames) : [];
+  const notifications = [];
+  const actorUsername = authorUsername;
+  const createdAt = new Date().toISOString();
+  const commentSummary = summarizeComment(body);
+
+  mentionedUsers.forEach((user) => {
+    if (user.slug === session?.slug) {
+      return;
+    }
+
+    notifications.push({
+      id: `notif-${Date.now()}-${user.slug}-mention`,
+      readerSlug: user.slug,
+      postSlug,
+      commentId,
+      actorName: authorName,
+      actorUsername,
+      type: "mention",
+      message: `${authorName}: "${commentSummary}"`,
+      createdAt
+    });
+  });
+
+  if (parentComment?.readerSlug && parentComment.readerSlug !== session?.slug) {
+    notifications.push({
+      id: `notif-${Date.now()}-${parentComment.readerSlug}-reply`,
+      readerSlug: parentComment.readerSlug,
+      postSlug,
+      commentId,
+      actorName: authorName,
+      actorUsername,
+      type: "reply",
+      message: `${authorName} replied: "${commentSummary}"`,
+      createdAt
+    });
+  }
+
+  await addNotifications(notifications);
+
+  revalidatePath(`/posts/${postSlug}`);
+  if (session) {
+    revalidatePath("/inbox");
+  }
+  return { success: "Comment posted." };
 }

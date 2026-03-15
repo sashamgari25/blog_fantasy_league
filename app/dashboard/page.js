@@ -1,11 +1,11 @@
 import { logoutAction } from "@/app/actions";
 import { CreatePostForm, EditPostsSection, OverviewForm } from "@/components/dashboard-forms";
 import { SiteShell, TopNav } from "@/components/site-shell";
-import { requireSession } from "@/lib/auth";
+import { requireAuthorSession } from "@/lib/auth";
 import { getLeagueData, sortPosts } from "@/lib/db";
 
 export default async function DashboardPage() {
-  const session = await requireSession();
+  const session = await requireAuthorSession();
   const data = await getLeagueData();
   const posts = sortPosts(data.posts).slice(0, 6);
 

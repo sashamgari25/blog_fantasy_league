@@ -77,6 +77,9 @@ async function main() {
       id: player.id,
       slug: player.slug,
       name: player.name,
+      username: null,
+      email: null,
+      role: "author",
       password_hash: hashPassword(password, salt),
       password_salt: salt
     };

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { CommentsSection } from "@/components/comments-section";
 import { MarkdownContent } from "@/components/markdown-content";
-import { getLeagueData, getPostBySlug } from "@/lib/db";
+import { getCommentsByPostSlug, getLeagueData, getPostBySlug } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
@@ -20,8 +22,12 @@ export async function generateMetadata({ params }) {
 
 export default async function PostPage({ params }) {
   const { slug } = await params;
-  const data = await getLeagueData();
-  const post = await getPostBySlug(slug);
+  const [data, post, comments, session] = await Promise.all([
+    getLeagueData(),
+    getPostBySlug(slug),
+    getCommentsByPostSlug(slug),
+    getSession()
+  ]);
 
   if (!post) {
     notFound();
@@ -82,6 +88,8 @@ export default async function PostPage({ params }) {
             </Link>
           ) : null}
         </article>
+
+        <CommentsSection comments={comments} postSlug={post.slug} session={session} />
       </main>
     </SiteShell>
   );

@@ -22,8 +22,8 @@ export default async function HomePage() {
               AN IPL FANTASY STORY, 2 FRIENDS, 1 WINNER
             </h2>
             <p className="subhead">
-              Follow both managers, read every post, and track the live race for bragging rights with private author publishing
-              and public reading.
+              Follow both managers, track the live race for bragging rights, and join the conversation with a reader profile or a
+              guest comment on every article.
             </p>
           </div>
           <div className="player-card">
@@ -105,6 +105,33 @@ export default async function HomePage() {
                 </Link>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="section-header">
+            <p className="eyebrow">Community</p>
+            <h2 className="section-title">Read, react, and pick a side</h2>
+          </div>
+          <div className="score-grid">
+            <article className="score-card">
+              <p className="meta-label">Reader profiles</p>
+              <h3 style={{ margin: "8px 0 10px" }}>Claim a username</h3>
+              <p className="card-copy">Create a fan profile to keep your own name across comments and follow the rivalry day by day.</p>
+              <Link className="buttonGhost" href="/login">
+                Create profile
+              </Link>
+            </article>
+            <article className="score-card">
+              <p className="meta-label">Guest reactions</p>
+              <h3 style={{ margin: "8px 0 10px" }}>Comment without signing up</h3>
+              <p className="card-copy">Every post now has an open comment thread, so readers can react even if they just drop in.</p>
+            </article>
+            <article className="score-card">
+              <p className="meta-label">Reply chain</p>
+              <h3 style={{ margin: "8px 0 10px" }}>Reply and tag other readers</h3>
+              <p className="card-copy">Replies stay threaded, and `@username` mentions land in a reader inbox so conversations don&apos;t get lost.</p>
+            </article>
           </div>
         </section>
 

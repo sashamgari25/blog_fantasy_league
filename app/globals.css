@@ -103,6 +103,53 @@ textarea {
   letter-spacing: 0.08em;
 }
 
+.site-footer {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(61, 214, 208, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(8, 19, 31, 0.92), rgba(7, 17, 29, 0.98));
+  box-shadow: var(--shadow);
+}
+
+.footer-grid,
+.comment-form,
+.comments-list {
+  display: grid;
+  gap: 20px;
+}
+
+.footer-grid {
+  grid-template-columns: 1.2fr 0.8fr 0.8fr;
+  align-items: start;
+}
+
+.footer-brand {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.footer-links {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.footer-note {
+  margin: 28px 0 0;
+  color: var(--muted);
+  text-align: center;
+}
+
 .eyebrow,
 .meta-label {
   margin: 0;
@@ -165,6 +212,18 @@ textarea {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.buttonLinkInbox {
+  position: relative;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ff4d4f;
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.18);
+}
+
 .stack {
   display: grid;
   gap: 24px;
@@ -192,7 +251,8 @@ textarea {
 .lineup-card,
 .post-card,
 .detail-card,
-.auth-card {
+.auth-card,
+.comment-card {
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.03);
@@ -230,6 +290,17 @@ textarea {
 .meta-chip {
   background: rgba(255, 255, 255, 0.05);
   color: var(--muted);
+}
+
+.meta-chip-reader {
+  background: rgba(61, 214, 208, 0.12);
+  color: #9af3ef;
+}
+
+.meta-chip-author {
+  background: rgba(255, 122, 24, 0.16);
+  color: #ffd39c;
+  border: 1px solid rgba(255, 191, 71, 0.18);
 }
 
 .list {
@@ -270,11 +341,56 @@ textarea {
 .post-card {
   display: grid;
   gap: 16px;
+  align-content: start;
+  height: 100%;
+}
+
+.timeline-card .tag-row,
+.post-card .tag-row {
+  margin-top: auto;
+}
+
+.timeline-card > .buttonGhost,
+.post-card > .buttonGhost {
+  width: 100%;
 }
 
 .detail-grid,
 .history-hero {
   grid-template-columns: 1.2fr 0.8fr;
+}
+
+.auth-panel {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.auth-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.comment-form {
+  margin-bottom: 20px;
+}
+
+.comment-card {
+  display: grid;
+  gap: 12px;
+}
+
+.reply-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .form-grid {
@@ -390,7 +506,8 @@ textarea {
   .timeline-grid,
   .detail-grid,
   .history-hero,
-  .form-grid {
+  .form-grid,
+  .footer-grid {
     grid-template-columns: 1fr;
   }
 
@@ -451,7 +568,8 @@ textarea {
   .lineup-card,
   .post-card,
   .detail-card,
-  .auth-card {
+  .auth-card,
+  .comment-card {
     border-radius: 18px;
     padding: 18px;
   }
@@ -472,6 +590,10 @@ textarea {
   .meta-row,
   .tag-row {
     gap: 8px;
+  }
+
+  .reply-banner {
+    align-items: stretch;
   }
 
   .score-value {
