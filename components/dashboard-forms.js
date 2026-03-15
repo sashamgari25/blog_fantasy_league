@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { createPostAction, deletePostAction, updateOverviewAction, updatePostAction } from "@/app/actions";
 import { InputField, TextareaField } from "@/components/forms";
 import { PostEditor } from "@/components/post-editor";
 
-export function CreatePostForm({ session, players }) {
+function CreatePostForm({ session, players }) {
   const [state, formAction, pending] = useActionState(createPostAction, {});
   const matchingPlayer = Object.values(players).find((player) => player.slug === session.slug);
 
@@ -37,7 +37,7 @@ export function CreatePostForm({ session, players }) {
   );
 }
 
-export function OverviewForm({ data }) {
+function OverviewForm({ data }) {
   const [state, formAction, pending] = useActionState(updateOverviewAction, {});
 
   return (
@@ -133,18 +133,143 @@ function PostEditorCard({ post }) {
   );
 }
 
-export function EditPostsSection({ posts }) {
+function EditPostsPanel({ posts }) {
+  const [query, setQuery] = useState("");
+  const filteredPosts = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+      return posts;
+    }
+
+    return posts.filter((post) =>
+      [post.title, post.summary, post.result, post.authorSlug, ...(post.tags || [])].join(" ").toLowerCase().includes(normalized)
+    );
+  }, [posts, query]);
+
   return (
     <section className="panel">
       <div className="section-header">
         <p className="eyebrow">Edit published posts</p>
         <h2 className="section-title">Update existing articles</h2>
       </div>
+      <label className="fieldBlock" style={{ maxWidth: 460, marginBottom: 20 }}>
+        <span>Search posts</span>
+        <input className="field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title, tag, slug, or result" />
+      </label>
       <div className="timeline-grid">
-        {posts.map((post) => (
-          <PostEditorCard key={post.id} post={post} />
-        ))}
+        {filteredPosts.length ? filteredPosts.map((post) => <PostEditorCard key={post.id} post={post} />) : <div className="empty">No posts matched that search.</div>}
       </div>
     </section>
+  );
+}
+
+function SearchLibraryPanel({ posts }) {
+  const [query, setQuery] = useState("");
+  const filteredPosts = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+      return posts;
+    }
+
+    return posts.filter((post) =>
+      [post.title, post.summary, post.result, post.authorSlug, ...(post.tags || [])].join(" ").toLowerCase().includes(normalized)
+    );
+  }, [posts, query]);
+
+  return (
+    <section className="panel">
+      <div className="section-header">
+        <p className="eyebrow">Search library</p>
+        <h2 className="section-title">Find any post fast</h2>
+      </div>
+      <label className="fieldBlock" style={{ maxWidth: 460, marginBottom: 20 }}>
+        <span>Search posts</span>
+        <input className="field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title, tag, slug, or result" />
+      </label>
+      <div className="timeline-grid">
+        {filteredPosts.length ? (
+          filteredPosts.map((post) => (
+            <article className="timeline-card" key={post.id}>
+              <div className="meta-row">
+                <span className="meta-chip">{post.date}</span>
+                <span className="meta-chip">{post.authorSlug}</span>
+                <span className="meta-chip">{post.result}</span>
+              </div>
+              <h3>{post.title}</h3>
+              <p>{post.summary}</p>
+            </article>
+          ))
+        ) : (
+          <div className="empty">No posts matched that search.</div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+const PANEL_META = {
+  compose: { eyebrow: "New post", title: "Write today’s update" },
+  overview: { eyebrow: "Overview", title: "Edit the live rivalry cards" },
+  edit: { eyebrow: "Edit posts", title: "Update or delete published articles" },
+  search: { eyebrow: "Search library", title: "Find old posts without endless scrolling" }
+};
+
+export function DashboardPanels({ session, data, posts }) {
+  const [panel, setPanel] = useState(null);
+
+  return (
+    <>
+      <section className="panel">
+        <div className="section-header">
+          <p className="eyebrow">Sections</p>
+          <h2 className="section-title">Open what you need</h2>
+        </div>
+        <div className="dashboard-launcher-grid">
+          <button className="dashboard-launcher" type="button" onClick={() => setPanel("compose")}>
+            <p className="eyebrow">Compose</p>
+            <h3>New post</h3>
+            <p className="card-copy">Jump straight into today&apos;s article editor.</p>
+          </button>
+          <button className="dashboard-launcher" type="button" onClick={() => setPanel("overview")}>
+            <p className="eyebrow">Overview</p>
+            <h3>Update live state</h3>
+            <p className="card-copy">Change fixture, points, bios, captains, and both XIs.</p>
+          </button>
+          <button className="dashboard-launcher" type="button" onClick={() => setPanel("edit")}>
+            <p className="eyebrow">Posts</p>
+            <h3>Edit published posts</h3>
+            <p className="card-copy">Search, edit, and delete older posts without scrolling forever.</p>
+          </button>
+          <button className="dashboard-launcher" type="button" onClick={() => setPanel("search")}>
+            <p className="eyebrow">Library</p>
+            <h3>Search archive</h3>
+            <p className="card-copy">Quickly look up results, titles, tags, and older matchdays.</p>
+          </button>
+        </div>
+      </section>
+
+      {panel ? (
+        <div className="dashboard-modal-shell" onClick={() => setPanel(null)}>
+          <div className="dashboard-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="dashboard-modal-header">
+              <div>
+                <p className="eyebrow">{PANEL_META[panel].eyebrow}</p>
+                <h2 className="section-title">{PANEL_META[panel].title}</h2>
+              </div>
+              <button className="buttonGhost" type="button" onClick={() => setPanel(null)}>
+                Close
+              </button>
+            </div>
+
+            <div className="dashboard-modal-body">
+              {panel === "compose" ? <CreatePostForm session={session} players={data.players} /> : null}
+              {panel === "overview" ? <OverviewForm data={data} /> : null}
+              {panel === "edit" ? <EditPostsPanel posts={posts} /> : null}
+              {panel === "search" ? <SearchLibraryPanel posts={posts} /> : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

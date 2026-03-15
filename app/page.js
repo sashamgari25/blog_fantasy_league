@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getLeagueData, sortPosts } from "@/lib/db";
-import { extractFirstImageUrl } from "@/lib/posts";
+import { PostSearchGrid } from "@/components/post-search-grid";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export default async function HomePage() {
@@ -140,48 +140,7 @@ export default async function HomePage() {
             <p className="eyebrow">Latest posts</p>
             <h2 className="section-title">Every update gets its own page</h2>
           </div>
-          <div className="timeline-grid">
-            {posts.map((post) => {
-              const author = Object.values(data.players).find((player) => player.slug === post.authorSlug);
-              const previewImage = extractFirstImageUrl(post.content, post.imageUrl || "");
-              return (
-                <article className="timeline-card" key={post.id}>
-                  <div className="meta-row">
-                    <span className="meta-chip">{post.date}</span>
-                    <span className="meta-chip">{author?.name}</span>
-                    <span className="meta-chip">{post.result}</span>
-                  </div>
-                  <div>
-                    <h3>{post.title}</h3>
-                    <p>{post.summary}</p>
-                  </div>
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt={post.title}
-                      style={{
-                        width: "100%",
-                        aspectRatio: "16 / 9",
-                        objectFit: "cover",
-                        borderRadius: 18,
-                        border: "1px solid rgba(255,255,255,0.08)"
-                      }}
-                    />
-                  ) : null}
-                  <div className="tag-row">
-                    {post.tags.map((tag) => (
-                      <span className="tag" key={tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <Link className="buttonGhost" href={`/posts/${post.slug}`}>
-                    Read post
-                  </Link>
-                </article>
-              );
-            })}
-          </div>
+          <PostSearchGrid posts={posts} players={data.players} showPreviewImages />
         </section>
       </main>
     </SiteShell>

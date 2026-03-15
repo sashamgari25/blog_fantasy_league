@@ -1,5 +1,6 @@
 import { logoutAction } from "@/app/actions";
-import { CreatePostForm, EditPostsSection, OverviewForm } from "@/components/dashboard-forms";
+import { DashboardPanels } from "@/components/dashboard-forms";
+import { PostSearchGrid } from "@/components/post-search-grid";
 import { SiteShell, TopNav } from "@/components/site-shell";
 import { requireAuthorSession } from "@/lib/auth";
 import { getLeagueData, sortPosts } from "@/lib/db";
@@ -7,7 +8,7 @@ import { getLeagueData, sortPosts } from "@/lib/db";
 export default async function DashboardPage() {
   const session = await requireAuthorSession();
   const data = await getLeagueData();
-  const posts = sortPosts(data.posts).slice(0, 6);
+  const posts = sortPosts(data.posts);
 
   return (
     <SiteShell>
@@ -34,26 +35,13 @@ export default async function DashboardPage() {
       </header>
 
       <main className="stack">
-        <CreatePostForm session={session} players={data.players} />
-        <OverviewForm data={data} />
-        <EditPostsSection posts={posts} />
+        <DashboardPanels session={session} data={data} posts={posts} />
         <section className="panel">
           <div className="section-header">
             <p className="eyebrow">Recent content</p>
             <h2 className="section-title">Latest published posts</h2>
           </div>
-          <div className="timeline-grid">
-            {posts.map((post) => (
-              <article className="timeline-card" key={post.id}>
-                <div className="meta-row">
-                  <span className="meta-chip">{post.date}</span>
-                  <span className="meta-chip">{post.result}</span>
-                </div>
-                <h3>{post.title}</h3>
-                <p>{post.summary}</p>
-              </article>
-            ))}
-          </div>
+          <PostSearchGrid posts={posts.slice(0, 6)} players={data.players} emptyMessage="No recent posts matched that search." ctaLabel="Open post" />
         </section>
       </main>
     </SiteShell>
