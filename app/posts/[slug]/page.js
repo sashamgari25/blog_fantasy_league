@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${post.title} | Fantasy Face-Off`,
+    title: `${post.title} | IPL Fantasy Faceoff`,
     description: post.summary
   };
 }
@@ -45,7 +45,7 @@ export default async function PostPage({ params }) {
             <span className="meta-chip">{author?.name}</span>
             <span className="meta-chip">{post.result}</span>
           </div>
-          <h2 className="headline" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", marginTop: 18 }}>
+          <h2 className="headline" style={{ fontSize: "clamp(1.95rem, 4.2vw, 3.1rem)", marginTop: 18 }}>
             {post.title}
           </h2>
           <p className="subhead">{post.summary}</p>

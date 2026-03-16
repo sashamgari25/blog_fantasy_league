@@ -17,7 +17,7 @@ export default async function DashboardPage() {
         <div className="detail-grid" style={{ marginTop: 28 }}>
           <div>
             <p className="eyebrow">Author dashboard</p>
-            <h2 className="headline" style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}>
+            <h2 className="headline" style={{ fontSize: "clamp(1.95rem, 4vw, 3.1rem)" }}>
               Welcome back, {session.author}.
             </h2>
             <p className="subhead">

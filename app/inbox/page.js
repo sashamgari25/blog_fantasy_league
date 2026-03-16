@@ -15,7 +15,7 @@ export default async function InboxPage() {
         <TopNav />
         <div style={{ marginTop: 28 }}>
           <p className="eyebrow">Inbox</p>
-          <h2 className="headline" style={{ fontSize: "clamp(2.1rem, 5vw, 4rem)", marginTop: 12 }}>
+          <h2 className="headline" style={{ fontSize: "clamp(1.85rem, 4vw, 3rem)", marginTop: 12 }}>
             Mentions and replies
           </h2>
           <p className="subhead">

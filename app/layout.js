@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Fantasy Face-Off",
+  title: "IPL Fantasy Faceoff",
   description: "An IPL fantasy rivalry app tracking lineups, posts, and bragging rights."
 };
 

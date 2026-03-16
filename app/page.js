@@ -17,9 +17,11 @@ export default async function HomePage() {
         <TopNav />
         <div className="hero-grid">
           <div>
-            <p className="eyebrow">Daily rivalry diary</p>
-            <h2 className="headline" style={{ fontSize: "clamp(2.1rem, 5vw, 4rem)" }}>
-              AN IPL FANTASY STORY, 2 FRIENDS, 1 WINNER
+            <p className="eyebrow">Matchday journal</p>
+            <h2 className="headline" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", lineHeight: 1.05 }}>
+              Two fantasy teams
+              <br />
+              One running story
             </h2>
             <p className="subhead">
               Follow both managers, track the live race for bragging rights, and join the conversation with a reader profile or a

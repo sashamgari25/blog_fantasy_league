@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${player.name} History | Fantasy Face-Off`,
+    title: `${player.name} History | IPL Fantasy Faceoff`,
     description: `Read ${player.name}'s IPL fantasy history, lineup choices, and rivalry posts.`
   };
 }
@@ -35,7 +35,7 @@ export default async function HistoryPage({ params }) {
         <div className="history-hero" style={{ marginTop: 28 }}>
           <div>
             <p className="eyebrow">Manager archive</p>
-            <h2 className="headline" style={{ fontSize: "clamp(2.4rem, 6vw, 4.2rem)" }}>
+            <h2 className="headline" style={{ fontSize: "clamp(2rem, 4.6vw, 3.2rem)" }}>
               {player.name}
             </h2>
             <p className="subhead">{player.bio}</p>

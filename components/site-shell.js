@@ -20,8 +20,8 @@ export async function TopNav() {
       <div className="brand">
         <span className="brand-mark">XI</span>
         <div>
-          <p className="eyebrow">IPL Fantasy Rivalry</p>
-          <h1 style={{ margin: 0 }}>Fantasy Face-Off</h1>
+          <p className="eyebrow">IPL Fantasy Faceoff</p>
+          <h1 style={{ margin: 0 }}>IPL Fantasy Faceoff</h1>
         </div>
       </div>
       <div className="nav-links">
@@ -71,7 +71,7 @@ export function SiteFooter() {
         <div className="footer-brand">
           <span className="brand-mark">XI</span>
           <div>
-            <h2 style={{ margin: 0 }}>Fantasy Face-Off</h2>
+            <h2 style={{ margin: 0 }}>IPL Fantasy Faceoff</h2>
             <p className="body-copy" style={{ margin: "10px 0 0" }}>
               A running IPL fantasy story between two friends, with reader profiles, open article comments, and daily lineup drama.
             </p>
@@ -91,10 +91,10 @@ export function SiteFooter() {
           <p className="eyebrow">Contact</p>
           <div className="footer-links">
             <a href="mailto:fantasyfaceoffipl@gmail.com">fantasyfaceoffipl@gmail.com</a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+            <a href="https://www.instagram.com/iplfantasyfaceoff/" target="_blank" rel="noreferrer">
               Instagram
             </a>
-            <a href="https://x.com" target="_blank" rel="noreferrer">
+            <a href="https://x.com/IPLFaceoff" target="_blank" rel="noreferrer">
               X / Twitter
             </a>
           </div>

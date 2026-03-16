@@ -1,4 +1,4 @@
-# Fantasy Face-Off
+# IPL Fantasy Faceoff
 
 A finished-up Next.js app for your IPL fantasy rivalry site. It has:
 
