@@ -90,7 +90,7 @@ export function SiteFooter() {
         <div>
           <p className="eyebrow">Contact</p>
           <div className="footer-links">
-            <a href="mailto:fantasyfaceoffipl@gmail.com">fantasyfaceoffipl@gmail.com</a>
+            <a href="mailto:iplfantasyfaceoff@gmail.com">iplfantasyfaceoff@gmail.com</a>
             <a href="https://www.instagram.com/iplfantasyfaceoff/" target="_blank" rel="noreferrer">
               Instagram
             </a>
