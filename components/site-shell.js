@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logoutAction } from "@/app/actions";
 import { getSession } from "@/lib/auth";
 import { getUnreadNotificationCount } from "@/lib/db";
 
@@ -50,9 +51,11 @@ export async function TopNav() {
               Inbox
               {unreadCount ? <span className="nav-dot" aria-label={`${unreadCount} unread notifications`} /> : null}
             </Link>
-            <Link className="buttonLink" href="/login">
-              {session.author}
-            </Link>
+            <form action={logoutAction}>
+              <button className="buttonLink" type="submit">
+                Sign out
+              </button>
+            </form>
           </>
         ) : (
           <Link className="buttonLink" href="/login">

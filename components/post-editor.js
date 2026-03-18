@@ -110,7 +110,7 @@ export function PostEditor({ name, defaultValue = "" }) {
       </div>
       <textarea
         ref={textareaRef}
-        className="textarea"
+        className="textarea article-textarea"
         name={name}
         value={content}
         onChange={(event) => setContent(event.target.value)}
