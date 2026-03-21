@@ -18,11 +18,18 @@ export default async function HomePage() {
         <div className="hero-grid">
           <div>
             <p className="eyebrow">Matchday journal</p>
-            <h2 className="headline" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", lineHeight: 1.05 }}>
+            <h2 className="headline" style={{ fontSize: "clamp(1.65rem, 3.5vw, 2.6rem)", lineHeight: 1.08 }}>
               Two fantasy teams
               <br />
               One running story
             </h2>
+            <div className="league-callout">
+              <p className="eyebrow">Private league for blog readers</p>
+              <div className="meta-row">
+                <span className="meta-chip">League code</span>
+                <strong>7B40KD0110@1</strong>
+              </div>
+            </div>
             <p className="subhead">
               Follow both managers, track the live race for bragging rights, and join the conversation with a reader profile or a
               guest comment on every article.
