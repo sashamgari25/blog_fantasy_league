@@ -122,10 +122,6 @@ function PostEditorCard({ post }) {
           <input className="field" name="result" defaultValue={post.result} />
         </label>
         <label className="fieldBlock">
-          <span>Image URL</span>
-          <input className="field" name="image-url" defaultValue={post.imageUrl || ""} placeholder="https://example.com/image.jpg" />
-        </label>
-        <label className="fieldBlock">
           <span>Summary</span>
           <textarea className="textarea" name="summary" defaultValue={post.summary} />
         </label>
