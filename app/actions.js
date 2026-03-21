@@ -142,50 +142,73 @@ export async function createPostAction(_prevState, formData) {
   return { success: `Published "${title}".` };
 }
 
-export async function updateOverviewAction(_prevState, formData) {
+export async function updateSharedOverviewAction(_prevState, formData) {
   await requireAuthorSession();
   const data = await getLeagueData();
-
-  const nextPlayers = Object.fromEntries(
-    Object.entries(data.players).map(([key, player]) => [
-      key,
-      {
-        slug: player.slug,
-        name: formData.get(`${player.slug}-name`)?.toString().trim() || player.name,
-        style: formData.get(`${player.slug}-style`)?.toString().trim() || player.style,
-        bio: formData.get(`${player.slug}-bio`)?.toString().trim() || player.bio,
-        teamName: formData.get(`${player.slug}-team-name`)?.toString().trim() || player.teamName,
-        totalPoints: Number(formData.get(`${player.slug}-points`) || player.totalPoints),
-        captain: formData.get(`${player.slug}-captain`)?.toString().trim() || player.captain,
-        summary: formData.get(`${player.slug}-summary`)?.toString().trim() || player.summary,
-        team: (formData.get(`${player.slug}-team`)?.toString() || "")
-          .split("\n")
-          .map((value) => value.trim())
-          .filter(Boolean)
-          .map((line) => {
-            const [name, role] = line.split("|").map((part) => part.trim());
-            return {
-              name,
-              role: role || "Player"
-            };
-          })
-      }
-    ])
-  );
 
   await updateLeagueOverview({
     fixture: formData.get("fixture")?.toString().trim() || data.fixture,
     journal: {
       date: formData.get("journal-date")?.toString().trim() || data.journal.date
     },
+    players: data.players
+  });
+
+  revalidatePath("/");
+  revalidatePath("/dashboard");
+
+  return { success: "Updated the shared match details." };
+}
+
+export async function updateAuthorOverviewAction(_prevState, formData) {
+  const session = await requireAuthorSession();
+  const data = await getLeagueData();
+  const currentPlayer = Object.values(data.players).find((player) => player.slug === session.slug);
+
+  if (!currentPlayer) {
+    return { error: "Could not find your author profile." };
+  }
+
+  const nextPlayers = Object.fromEntries(
+    Object.entries(data.players).map(([key, player]) => [
+      key,
+      player.slug === currentPlayer.slug
+        ? {
+            slug: player.slug,
+            name: formData.get("name")?.toString().trim() || player.name,
+            style: formData.get("style")?.toString().trim() || player.style,
+            bio: formData.get("bio")?.toString().trim() || player.bio,
+            teamName: formData.get("team-name")?.toString().trim() || player.teamName,
+            totalPoints: Number(formData.get("points") || player.totalPoints),
+            captain: formData.get("captain")?.toString().trim() || player.captain,
+            summary: formData.get("summary")?.toString().trim() || player.summary,
+            team: (formData.get("team")?.toString() || "")
+              .split("\n")
+              .map((value) => value.trim())
+              .filter(Boolean)
+              .map((line) => {
+                const [name, role] = line.split("|").map((part) => part.trim());
+                return {
+                  name,
+                  role: role || "Player"
+                };
+              })
+          }
+        : player
+    ])
+  );
+
+  await updateLeagueOverview({
+    fixture: data.fixture,
+    journal: data.journal,
     players: nextPlayers
   });
 
   revalidatePath("/");
   revalidatePath("/dashboard");
-  Object.values(data.players).forEach((player) => revalidatePath(`/history/${player.slug}`));
+  revalidatePath(`/history/${currentPlayer.slug}`);
 
-  return { success: "Updated the main rivalry dashboard." };
+  return { success: `Updated ${currentPlayer.name}'s side of the rivalry.` };
 }
 
 export async function updatePostAction(_prevState, formData) {

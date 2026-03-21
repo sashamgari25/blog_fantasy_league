@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { createPostAction, deletePostAction, updateOverviewAction, updatePostAction } from "@/app/actions";
+import { createPostAction, deletePostAction, updateAuthorOverviewAction, updatePostAction, updateSharedOverviewAction } from "@/app/actions";
 import { InputField, TextareaField } from "@/components/forms";
 import { PostEditor } from "@/components/post-editor";
 
@@ -37,41 +37,60 @@ function CreatePostForm({ session, players }) {
   );
 }
 
-function OverviewForm({ data }) {
-  const [state, formAction, pending] = useActionState(updateOverviewAction, {});
+function SharedOverviewForm({ data }) {
+  const [state, formAction, pending] = useActionState(updateSharedOverviewAction, {});
 
   return (
     <form action={formAction} className="panel">
       <div className="section-header">
-        <p className="eyebrow">Dashboard controls</p>
-        <h2 className="section-title">Update the live rivalry overview</h2>
+        <p className="eyebrow">Shared match info</p>
+        <h2 className="section-title">Update fixture and date</h2>
       </div>
       <div className="form-grid">
         <InputField label="Fixture" name="fixture" defaultValue={data.fixture} />
         <InputField label="Journal date" name="journal-date" defaultValue={data.journal.date} />
-        {Object.values(data.players).map((player) => (
-          <div className="fieldBlock" key={player.slug}>
-            <span>{player.name} overview</span>
-            <input className="field" name={`${player.slug}-name`} defaultValue={player.name} />
-            <input className="field" name={`${player.slug}-team-name`} defaultValue={player.teamName} />
-            <input className="field" name={`${player.slug}-style`} defaultValue={player.style} />
-            <input className="field" name={`${player.slug}-points`} type="number" defaultValue={player.totalPoints} />
-            <input className="field" name={`${player.slug}-captain`} defaultValue={player.captain} />
-            <textarea className="textarea" name={`${player.slug}-summary`} defaultValue={player.summary} />
-            <textarea className="textarea" name={`${player.slug}-bio`} defaultValue={player.bio} />
-            <textarea
-              className="textarea"
-              name={`${player.slug}-team`}
-              defaultValue={player.team.map((member) => `${member.name} | ${member.role}`).join("\n")}
-            />
-            <p className="field-help">Use one player per line in the format `Player Name | Role`.</p>
-          </div>
-        ))}
       </div>
       {state?.error ? <p className="notice">{state.error}</p> : null}
       {state?.success ? <p className="notice success">{state.success}</p> : null}
       <button className="button" type="submit" disabled={pending}>
-        {pending ? "Saving..." : "Save overview"}
+        {pending ? "Saving..." : "Save shared info"}
+      </button>
+    </form>
+  );
+}
+
+function AuthorOverviewForm({ session, players }) {
+  const [state, formAction, pending] = useActionState(updateAuthorOverviewAction, {});
+  const player = Object.values(players).find((entry) => entry.slug === session.slug);
+
+  if (!player) {
+    return null;
+  }
+
+  return (
+    <form action={formAction} className="panel">
+      <div className="section-header">
+        <p className="eyebrow">Your side</p>
+        <h2 className="section-title">Update {player.teamName}</h2>
+      </div>
+      <div className="form-grid">
+        <InputField label="Name" name="name" defaultValue={player.name} />
+        <InputField label="Team name" name="team-name" defaultValue={player.teamName} />
+        <InputField label="Style" name="style" defaultValue={player.style} />
+        <InputField label="Points" name="points" type="number" defaultValue={player.totalPoints} />
+        <InputField label="Captain" name="captain" defaultValue={player.captain} />
+        <TextareaField label="Summary" name="summary" defaultValue={player.summary} placeholder="Quick summary for the live scoreboard." />
+        <TextareaField label="Bio" name="bio" defaultValue={player.bio} placeholder="Your manager bio on the public page." />
+        <label className="fieldBlock fieldBlockWide">
+          <span>Current XI</span>
+          <textarea className="textarea" name="team" defaultValue={player.team.map((member) => `${member.name} | ${member.role}`).join("\n")} />
+          <p className="field-help">Use one player per line in the format `Player Name | Role`.</p>
+        </label>
+      </div>
+      {state?.error ? <p className="notice">{state.error}</p> : null}
+      {state?.success ? <p className="notice success">{state.success}</p> : null}
+      <button className="button" type="submit" disabled={pending}>
+        {pending ? "Saving..." : "Save my side"}
       </button>
     </form>
   );
@@ -209,7 +228,7 @@ function SearchLibraryPanel({ posts }) {
 
 const PANEL_META = {
   compose: { eyebrow: "New post", title: "Write today’s update" },
-  overview: { eyebrow: "Overview", title: "Edit the live rivalry cards" },
+  overview: { eyebrow: "Overview", title: "Edit your side without overwriting the other one" },
   edit: { eyebrow: "Edit posts", title: "Update or delete published articles" },
   search: { eyebrow: "Search library", title: "Find old posts without endless scrolling" }
 };
@@ -263,7 +282,12 @@ export function DashboardPanels({ session, data, posts }) {
 
             <div className="dashboard-modal-body">
               {panel === "compose" ? <CreatePostForm session={session} players={data.players} /> : null}
-              {panel === "overview" ? <OverviewForm data={data} /> : null}
+              {panel === "overview" ? (
+                <div className="stack">
+                  <SharedOverviewForm data={data} />
+                  <AuthorOverviewForm session={session} players={data.players} />
+                </div>
+              ) : null}
               {panel === "edit" ? <EditPostsPanel posts={posts} /> : null}
               {panel === "search" ? <SearchLibraryPanel posts={posts} /> : null}
             </div>
