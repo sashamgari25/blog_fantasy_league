@@ -11,7 +11,6 @@ export default function robots() {
         disallow: ["/dashboard", "/inbox", "/login"]
       }
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl
+    sitemap: `${siteUrl}/sitemap.xml`
   };
 }
