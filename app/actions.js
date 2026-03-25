@@ -7,7 +7,9 @@ import {
   addNotifications,
   addPost,
   createReaderAccount,
+  deleteComment,
   deletePost,
+  getAuthors,
   getCommentById,
   getLeagueData,
   getUsersByUsernames,
@@ -275,6 +277,22 @@ export async function deletePostAction(_prevState, formData) {
   return { success: "Post deleted." };
 }
 
+export async function deleteCommentAction(formData) {
+  await requireAuthorSession();
+
+  const commentId = formData.get("comment-id")?.toString().trim() || "";
+  const postSlug = formData.get("post-slug")?.toString().trim() || "";
+
+  if (!commentId || !postSlug) {
+    return;
+  }
+
+  await deleteComment(commentId);
+
+  revalidatePath(`/posts/${postSlug}`);
+  revalidatePath("/inbox");
+}
+
 export async function addCommentAction(_prevState, formData) {
   const postSlug = formData.get("post-slug")?.toString().trim() || "";
   const body = formData.get("body")?.toString().trim() || "";
@@ -317,14 +335,30 @@ export async function addCommentAction(_prevState, formData) {
   const actorUsername = authorUsername;
   const createdAt = new Date().toISOString();
   const commentSummary = summarizeComment(body);
+  const authors = await getAuthors();
+  const authorRecipientSlugs = new Set(authors.map((author) => author.slug));
+
+  authorRecipientSlugs.forEach((recipientSlug) => {
+    notifications.push({
+      id: `notif-${commentId}-${recipientSlug}-comment`,
+      readerSlug: recipientSlug,
+      postSlug,
+      commentId,
+      actorName: authorName,
+      actorUsername,
+      type: "comment",
+      message: `${authorName}: "${commentSummary}"`,
+      createdAt
+    });
+  });
 
   mentionedUsers.forEach((user) => {
-    if (user.slug === session?.slug) {
+    if (user.slug === session?.slug || authorRecipientSlugs.has(user.slug)) {
       return;
     }
 
     notifications.push({
-      id: `notif-${Date.now()}-${user.slug}-mention`,
+      id: `notif-${commentId}-${user.slug}-mention`,
       readerSlug: user.slug,
       postSlug,
       commentId,
@@ -335,20 +369,6 @@ export async function addCommentAction(_prevState, formData) {
       createdAt
     });
   });
-
-  if (parentComment?.readerSlug && parentComment.readerSlug !== session?.slug) {
-    notifications.push({
-      id: `notif-${Date.now()}-${parentComment.readerSlug}-reply`,
-      readerSlug: parentComment.readerSlug,
-      postSlug,
-      commentId,
-      actorName: authorName,
-      actorUsername,
-      type: "reply",
-      message: `${authorName} replied: "${commentSummary}"`,
-      createdAt
-    });
-  }
 
   await addNotifications(notifications);
 

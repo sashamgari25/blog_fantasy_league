@@ -5,6 +5,15 @@ import { SiteShell, TopNav } from "@/components/site-shell";
 import { requireAuthorSession } from "@/lib/auth";
 import { getLeagueData, sortPosts } from "@/lib/db";
 
+export const metadata = {
+  title: "Dashboard",
+  description: "Private author dashboard for managing IPL Fantasy Faceoff posts and matchday updates.",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
+
 export default async function DashboardPage() {
   const session = await requireAuthorSession();
   const data = await getLeagueData();

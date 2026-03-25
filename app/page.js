@@ -1,7 +1,24 @@
 import Link from "next/link";
 import { getLeagueData, sortPosts } from "@/lib/db";
+import { buildAbsoluteUrl } from "@/lib/site";
 import { PostSearchGrid } from "@/components/post-search-grid";
 import { SiteShell, TopNav } from "@/components/site-shell";
+
+export const metadata = {
+  description: "Follow both managers, track current XIs, join the private reader league, and read daily IPL fantasy updates.",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    title: "IPL Fantasy Faceoff",
+    description: "Follow both managers, track current XIs, join the private reader league, and read daily IPL fantasy updates.",
+    url: buildAbsoluteUrl("/")
+  },
+  twitter: {
+    title: "IPL Fantasy Faceoff",
+    description: "Follow both managers, track current XIs, join the private reader league, and read daily IPL fantasy updates."
+  }
+};
 
 export default async function HomePage() {
   const data = await getLeagueData();

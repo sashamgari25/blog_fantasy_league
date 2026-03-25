@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { addCommentAction } from "@/app/actions";
+import { addCommentAction, deleteCommentAction } from "@/app/actions";
 
 export function CommentsSection({ comments, postSlug, session }) {
   const [replyTarget, setReplyTarget] = useState(null);
@@ -53,7 +53,7 @@ export function CommentsSection({ comments, postSlug, session }) {
       <div className="comments-list">
         {commentTree.length ? (
           commentTree.map((comment) => (
-            <CommentThread key={comment.id} comment={comment} level={0} onReply={setReplyTarget} />
+            <CommentThread key={comment.id} comment={comment} level={0} onReply={setReplyTarget} postSlug={postSlug} canModerate={session?.role === "author"} />
           ))
         ) : (
           <div className="empty">No comments yet. Be the first to react to this article.</div>
@@ -63,7 +63,7 @@ export function CommentsSection({ comments, postSlug, session }) {
   );
 }
 
-function CommentThread({ comment, level, onReply }) {
+function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
   return (
     <article className="comment-card" style={{ marginLeft: level ? Math.min(level * 20, 40) : 0 }}>
       <div className="meta-row">
@@ -78,9 +78,20 @@ function CommentThread({ comment, level, onReply }) {
         <button className="buttonGhost" type="button" onClick={() => onReply(comment)}>
           Reply
         </button>
+        {canModerate ? (
+          <form action={deleteCommentAction}>
+            <input type="hidden" name="comment-id" value={comment.id} />
+            <input type="hidden" name="post-slug" value={postSlug} />
+            <button className="buttonGhost buttonGhostDanger" type="submit">
+              Delete
+            </button>
+          </form>
+        ) : null}
       </div>
       {comment.replies?.length
-        ? comment.replies.map((reply) => <CommentThread key={reply.id} comment={reply} level={level + 1} onReply={onReply} />)
+        ? comment.replies.map((reply) => (
+            <CommentThread key={reply.id} comment={reply} level={level + 1} onReply={onReply} postSlug={postSlug} canModerate={canModerate} />
+          ))
         : null}
     </article>
   );

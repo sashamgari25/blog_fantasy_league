@@ -5,6 +5,15 @@ import { getAllowedAuthors, getSession } from "@/lib/auth";
 import { SiteShell, TopNav } from "@/components/site-shell";
 import { LoginPageForms } from "@/components/login-form";
 
+export const metadata = {
+  title: "Sign in",
+  description: "Sign in as a reader or author to join the IPL Fantasy Faceoff conversation.",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
+
 export default async function LoginPage() {
   const session = await getSession();
   if (session?.role === "author") {

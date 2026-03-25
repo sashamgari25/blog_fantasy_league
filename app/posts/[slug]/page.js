@@ -4,6 +4,7 @@ import { CommentsSection } from "@/components/comments-section";
 import { MarkdownContent } from "@/components/markdown-content";
 import { getCommentsByPostSlug, getLeagueData, getPostBySlug } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+import { buildAbsoluteUrl } from "@/lib/site";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
@@ -15,8 +16,23 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${post.title} | IPL Fantasy Faceoff`,
-    description: post.summary
+    title: post.title,
+    description: post.summary,
+    alternates: {
+      canonical: `/posts/${post.slug}`
+    },
+    openGraph: {
+      title: post.title,
+      description: post.summary,
+      url: buildAbsoluteUrl(`/posts/${post.slug}`),
+      type: "article",
+      images: post.imageUrl ? [{ url: post.imageUrl, alt: post.title }] : []
+    },
+    twitter: {
+      title: post.title,
+      description: post.summary,
+      images: post.imageUrl ? [post.imageUrl] : []
+    }
   };
 }
 
@@ -34,6 +50,24 @@ export default async function PostPage({ params }) {
   }
 
   const author = Object.values(data.players).find((player) => player.slug === post.authorSlug);
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      "@type": "Person",
+      name: author?.name || "IPL Fantasy Faceoff"
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "IPL Fantasy Faceoff"
+    },
+    mainEntityOfPage: buildAbsoluteUrl(`/posts/${post.slug}`),
+    image: post.imageUrl ? [post.imageUrl] : undefined
+  };
 
   return (
     <SiteShell>
@@ -60,6 +94,7 @@ export default async function PostPage({ params }) {
       </header>
 
       <main className="stack">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
         <article className="panel">
           <div className="section-header">
             <p className="eyebrow">Article</p>

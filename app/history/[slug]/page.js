@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getLeagueData, getPlayerBySlug, sortPosts } from "@/lib/db";
+import { buildAbsoluteUrl } from "@/lib/site";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
@@ -12,8 +13,20 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${player.name} History | IPL Fantasy Faceoff`,
-    description: `Read ${player.name}'s IPL fantasy history, lineup choices, and rivalry posts.`
+    title: `${player.name} History`,
+    description: `Read ${player.name}'s IPL fantasy history, lineup choices, and rivalry posts.`,
+    alternates: {
+      canonical: `/history/${player.slug}`
+    },
+    openGraph: {
+      title: `${player.name} History`,
+      description: `Read ${player.name}'s IPL fantasy history, lineup choices, and rivalry posts.`,
+      url: buildAbsoluteUrl(`/history/${player.slug}`)
+    },
+    twitter: {
+      title: `${player.name} History`,
+      description: `Read ${player.name}'s IPL fantasy history, lineup choices, and rivalry posts.`
+    }
   };
 }
 
