@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { togglePostLikeAction } from "@/app/actions";
 import { extractFirstImageUrl } from "@/lib/posts";
 
 export function PostSearchGrid({
@@ -97,10 +98,13 @@ export function PostSearchGrid({
                     </span>
                   ))}
                 </div>
-                <Link className="buttonGhost" href={postUrl}>
-                  {ctaLabel}
-                </Link>
-                <ShareCardButton title={post.title} path={postUrl} />
+                <div className="post-card-actions">
+                  <Link className="buttonGhost" href={postUrl}>
+                    {ctaLabel}
+                  </Link>
+                  <LikeCardButton postSlug={post.slug} initialLikeCount={post.likeCount || 0} />
+                  <ShareCardButton title={post.title} path={postUrl} />
+                </div>
               </article>
             );
           })
@@ -130,6 +134,24 @@ export function PostSearchGrid({
   );
 }
 
+function LikeCardButton({ postSlug, initialLikeCount }) {
+  const [state, formAction, pending] = useActionState(togglePostLikeAction, {
+    likeCount: initialLikeCount,
+    likedByViewer: false,
+    error: ""
+  });
+  const count = state?.likeCount ?? initialLikeCount;
+
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="post-slug" value={postSlug} />
+      <button className="buttonGhost share-card-button card-action-white" type="submit" disabled={pending}>
+        ♥ {count}
+      </button>
+    </form>
+  );
+}
+
 function ShareCardButton({ title, path }) {
   const [message, setMessage] = useState("");
 
@@ -146,7 +168,7 @@ function ShareCardButton({ title, path }) {
 
   return (
     <div className="share-card-stack">
-      <button className="buttonGhost share-card-button" type="button" onClick={handleShare}>
+      <button className="buttonGhost share-card-button card-action-white" type="button" onClick={handleShare}>
         Share
       </button>
       {message ? <span className="field-help">{message}</span> : null}

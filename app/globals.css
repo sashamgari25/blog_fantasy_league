@@ -573,6 +573,11 @@ textarea {
   width: 100%;
 }
 
+.post-card-actions {
+  display: grid;
+  gap: 10px;
+}
+
 .detail-grid,
 .history-hero {
   grid-template-columns: 1.2fr 0.8fr;
@@ -680,6 +685,16 @@ textarea {
 
 .share-card-button {
   width: 100%;
+}
+
+.card-action-white {
+  color: var(--text) !important;
+}
+
+.card-action-white:visited,
+.card-action-white:hover,
+.card-action-white:active {
+  color: var(--text) !important;
 }
 
 .comment-form {
