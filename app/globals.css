@@ -284,6 +284,13 @@ textarea {
 .buttonGhost {
   border-color: var(--line);
   background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.buttonGhost:visited,
+.buttonGhost:hover,
+.buttonGhost:active {
+  color: var(--text);
 }
 
 .buttonGhostDanger {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
 import Link from "next/link";
 import { togglePostLikeAction } from "@/app/actions";
 import { extractFirstImageUrl } from "@/lib/posts";
@@ -99,7 +99,7 @@ export function PostSearchGrid({
                   ))}
                 </div>
                 <div className="post-card-actions">
-                  <Link className="buttonGhost" href={postUrl}>
+                  <Link className="buttonGhost card-action-white" href={postUrl}>
                     {ctaLabel}
                   </Link>
                   <LikeCardButton postSlug={post.slug} initialLikeCount={post.likeCount || 0} />
@@ -135,17 +135,57 @@ export function PostSearchGrid({
 }
 
 function LikeCardButton({ postSlug, initialLikeCount }) {
+  const formRef = useRef(null);
   const [state, formAction, pending] = useActionState(togglePostLikeAction, {
     likeCount: initialLikeCount,
     likedByViewer: false,
     error: ""
   });
-  const count = state?.likeCount ?? initialLikeCount;
+  const [desiredLiked, setDesiredLiked] = useState(false);
+  const [optimisticLike, setOptimisticLike] = useOptimistic(
+    { likeCount: initialLikeCount, likedByViewer: false },
+    (_current, next) => next
+  );
+
+  useEffect(() => {
+    if (typeof state?.likeCount === "number") {
+      setOptimisticLike({
+        likeCount: state.likeCount,
+        likedByViewer: state.likedByViewer
+      });
+    }
+  }, [setOptimisticLike, state?.likeCount, state?.likedByViewer]);
+
+  useEffect(() => {
+    if (pending) {
+      return;
+    }
+
+    const serverLiked = state?.likedByViewer ?? false;
+    if (serverLiked !== desiredLiked) {
+      formRef.current?.requestSubmit();
+    }
+  }, [desiredLiked, pending, state?.likedByViewer]);
+
+  const count = optimisticLike.likeCount;
+  const liked = optimisticLike.likedByViewer;
 
   return (
-    <form action={formAction}>
+    <form action={formAction} ref={formRef}>
       <input type="hidden" name="post-slug" value={postSlug} />
-      <button className="buttonGhost share-card-button card-action-white" type="submit" disabled={pending}>
+      <input type="hidden" name="desired-liked" value={desiredLiked ? "true" : "false"} />
+      <button
+        className={`buttonGhost share-card-button card-action-white ${liked ? "engagement-button-active" : ""}`}
+        type="submit"
+        onClick={() => {
+          const nextLiked = !liked;
+          setDesiredLiked(nextLiked);
+          setOptimisticLike({
+            likeCount: nextLiked ? count + 1 : Math.max(0, count - 1),
+            likedByViewer: nextLiked
+          });
+        }}
+      >
         ♥ {count}
       </button>
     </form>

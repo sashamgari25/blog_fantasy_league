@@ -14,6 +14,7 @@ import {
   getLeagueData,
   getUsersByUsernames,
   getPostBySlug,
+  setCommentLike,
   setPostLike,
   toggleCommentLike,
   togglePostLike,
@@ -346,11 +347,15 @@ export async function toggleCommentLikeAction(_prevState, formData) {
 
   const commentId = formData.get("comment-id")?.toString().trim() || "";
   const postSlug = formData.get("post-slug")?.toString().trim() || "";
+  const desiredLikedRaw = formData.get("desired-liked")?.toString().trim();
   if (!commentId || !postSlug) {
     return { error: "Missing comment." };
   }
 
-  const nextState = await toggleCommentLike(commentId, session.slug);
+  const nextState =
+    desiredLikedRaw === "true" || desiredLikedRaw === "false"
+      ? await setCommentLike(commentId, session.slug, desiredLikedRaw === "true")
+      : await toggleCommentLike(commentId, session.slug);
   revalidatePath(`/posts/${postSlug}`);
   return { commentId, ...nextState };
 }

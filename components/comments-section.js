@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useOptimistic, useRef, useState } from "react";
 import { addCommentAction, deleteCommentAction, toggleCommentLikeAction } from "@/app/actions";
 
 export function CommentsSection({ comments, postSlug, session }) {
@@ -29,7 +29,7 @@ export function CommentsSection({ comments, postSlug, session }) {
         {replyTarget ? (
           <div className="reply-banner">
             <span>Replying to {replyTarget.authorName}{replyTarget.authorUsername ? ` (@${replyTarget.authorUsername})` : ""}</span>
-            <button className="buttonGhost" type="button" onClick={() => setReplyTarget(null)}>
+            <button className="buttonGhost card-action-white" type="button" onClick={() => setReplyTarget(null)}>
               Cancel reply
             </button>
           </div>
@@ -64,14 +64,41 @@ export function CommentsSection({ comments, postSlug, session }) {
 }
 
 function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
+  const formRef = useRef(null);
   const [likeState, likeFormAction, likePending] = useActionState(toggleCommentLikeAction, {
     commentId: comment.id,
     likeCount: comment.likeCount || 0,
     likedByViewer: comment.likedByViewer || false,
     error: ""
   });
-  const likeCount = likeState?.commentId === comment.id ? likeState.likeCount : comment.likeCount || 0;
-  const likedByViewer = likeState?.commentId === comment.id ? likeState.likedByViewer : comment.likedByViewer || false;
+  const [desiredLiked, setDesiredLiked] = useState(comment.likedByViewer || false);
+  const [optimisticLike, setOptimisticLike] = useOptimistic(
+    { likeCount: comment.likeCount || 0, likedByViewer: comment.likedByViewer || false },
+    (_current, next) => next
+  );
+
+  useEffect(() => {
+    if (likeState?.commentId === comment.id && typeof likeState?.likeCount === "number") {
+      setOptimisticLike({
+        likeCount: likeState.likeCount,
+        likedByViewer: likeState.likedByViewer
+      });
+    }
+  }, [comment.id, likeState?.commentId, likeState?.likeCount, likeState?.likedByViewer, setOptimisticLike]);
+
+  useEffect(() => {
+    if (likePending) {
+      return;
+    }
+
+    const serverLiked = likeState?.commentId === comment.id ? likeState.likedByViewer : comment.likedByViewer || false;
+    if (serverLiked !== desiredLiked) {
+      formRef.current?.requestSubmit();
+    }
+  }, [comment.id, comment.likedByViewer, desiredLiked, likePending, likeState?.commentId, likeState?.likedByViewer]);
+
+  const likeCount = optimisticLike.likeCount;
+  const likedByViewer = optimisticLike.likedByViewer;
 
   return (
     <article className="comment-card" style={{ marginLeft: level ? Math.min(level * 20, 40) : 0 }}>
@@ -84,13 +111,25 @@ function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
       </div>
       <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{comment.body}</p>
       <div className="meta-row">
-        <button className="buttonGhost" type="button" onClick={() => onReply(comment)}>
+        <button className="buttonGhost card-action-white" type="button" onClick={() => onReply(comment)}>
           Reply
         </button>
-        <form action={likeFormAction}>
+        <form action={likeFormAction} ref={formRef}>
           <input type="hidden" name="comment-id" value={comment.id} />
           <input type="hidden" name="post-slug" value={postSlug} />
-          <button className={`buttonGhost engagement-button ${likedByViewer ? "engagement-button-active" : ""}`} type="submit" disabled={likePending}>
+          <input type="hidden" name="desired-liked" value={desiredLiked ? "true" : "false"} />
+          <button
+            className={`buttonGhost engagement-button card-action-white ${likedByViewer ? "engagement-button-active" : ""}`}
+            type="submit"
+            onClick={() => {
+              const nextLiked = !likedByViewer;
+              setDesiredLiked(nextLiked);
+              setOptimisticLike({
+                likeCount: nextLiked ? likeCount + 1 : Math.max(0, likeCount - 1),
+                likedByViewer: nextLiked
+              });
+            }}
+          >
             ♥ {likeCount}
           </button>
         </form>
