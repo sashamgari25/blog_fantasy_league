@@ -17,19 +17,6 @@ export function PostEngagement({ postSlug, postTitle, initialLikeCount, initialL
   async function handleShare() {
     const url = window.location.href;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: postTitle,
-          url
-        });
-        setShareMessage("Shared.");
-        return;
-      } catch {
-        // Fall through to clipboard.
-      }
-    }
-
     try {
       await navigator.clipboard.writeText(url);
       setShareMessage("Link copied.");

@@ -136,16 +136,6 @@ function ShareCardButton({ title, path }) {
   async function handleShare() {
     const url = `${window.location.origin}${path}`;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-        setMessage("Shared.");
-        return;
-      } catch {
-        // Fall through.
-      }
-    }
-
     try {
       await navigator.clipboard.writeText(url);
       setMessage("Link copied.");
