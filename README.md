@@ -11,26 +11,42 @@ A finished-up Next.js app for your IPL fantasy rivalry site. It has:
 - local multi-image uploads for articles
 - Docker support
 
-## Vercel + Supabase
+## Vercel + Supabase + Cloudinary
 
-For long-term hosting, use Vercel for the app and Supabase for data plus image storage.
+For long-term hosting, use Vercel for the app, Supabase for data, and Cloudinary for article image storage.
 
 ### Supabase setup
 
 1. Create a Supabase project.
 2. Run the SQL in `supabase/schema.sql` in the Supabase SQL editor.
-3. Create a public storage bucket called `post-images`.
-4. Seed your initial data:
+3. Seed your initial data:
    - run `npm run seed:supabase`
-5. Add these environment variables in both local `.env.local` and Vercel:
+4. Add these environment variables in both local `.env.local` and Vercel:
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
-   - `SUPABASE_STORAGE_BUCKET`
    - `SESSION_SECRET`
    - `NISCHAL_PASSWORD`
    - `SHREYAS_PASSWORD`
    - `NEXT_PUBLIC_SITE_URL`
+
+### Cloudinary setup
+
+1. Create a Cloudinary account and product environment.
+2. Copy your Cloud name, API key, and API secret from the Cloudinary dashboard.
+3. Add these environment variables in both local `.env.local` and Vercel:
+   - `CLOUDINARY_CLOUD_NAME`
+   - `CLOUDINARY_API_KEY`
+   - `CLOUDINARY_API_SECRET`
+   - `CLOUDINARY_FOLDER`
+
+When the Cloudinary env vars are present, `/api/uploads` will send new article images to Cloudinary first. If Cloudinary is not configured, the app falls back to Supabase Storage, then to local `public/uploads`.
+
+To migrate old Supabase-hosted article images into Cloudinary and rewrite the saved post URLs, run:
+
+```bash
+npm run migrate:cloudinary
+```
 
 ### Vercel setup
 
@@ -40,7 +56,7 @@ For long-term hosting, use Vercel for the app and Supabase for data plus image s
 4. Set the production domain URL into `NEXT_PUBLIC_SITE_URL`.
 5. Deploy.
 
-When Supabase env vars are present, the app will use Supabase instead of local SQLite/filesystem storage.
+When Supabase env vars are present, the app will use Supabase instead of local SQLite/filesystem storage for the database. When Cloudinary env vars are present, new uploaded images will be stored in Cloudinary.
 
 ## Stack
 
@@ -86,4 +102,10 @@ For production, the intended upgrade path is:
 
 ## Storage
 
-The app seeds itself from `data/league.json` on first run, then stores real data in `data/app.db`. New articles, image references, deletions, and league updates are written into SQLite through the dashboard. Uploaded image files are stored in `public/uploads`.
+The app seeds itself from `data/league.json` on first run, then stores real data in `data/app.db`. New articles, image references, deletions, and league updates are written into SQLite through the dashboard until Supabase is configured.
+
+Upload priority:
+
+1. Cloudinary
+2. Supabase Storage
+3. local `public/uploads`

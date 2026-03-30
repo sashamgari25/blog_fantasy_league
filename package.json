@@ -14,6 +14,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:supabase": "node scripts/seed-supabase.mjs"
+    "seed:supabase": "node scripts/seed-supabase.mjs",
+    "migrate:cloudinary": "node scripts/migrate-images-to-cloudinary.mjs"
   }
 }

@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 import { requireAuthorSession } from "@/lib/auth";
+import { isCloudinaryConfigured, uploadToCloudinary } from "@/lib/cloudinary";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(request) {
@@ -18,6 +19,29 @@ export async function POST(request) {
   await mkdir(uploadsDir, { recursive: true });
 
   const uploads = [];
+
+  if (isCloudinaryConfigured()) {
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        return Response.json({ error: "Only image files are supported." }, { status: 400 });
+      }
+
+      const extension = path.extname(file.name) || ".png";
+      const url = await uploadToCloudinary({
+        file,
+        ownerSlug: session.slug
+      });
+      const alt = path.basename(file.name, extension).replace(/[-_]+/g, " ");
+
+      uploads.push({
+        name: file.name,
+        url,
+        markdown: `![${alt}](${url})`
+      });
+    }
+
+    return Response.json({ uploads });
+  }
 
   if (isSupabaseConfigured()) {
     const supabase = getSupabaseAdmin();
