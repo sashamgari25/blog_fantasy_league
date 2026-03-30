@@ -54,22 +54,14 @@ export default async function HomePage() {
           </div>
           <div className="player-card">
             <p className="eyebrow">Rivalry status</p>
-            <div className="score-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+            <div className="rivalry-status-grid">
               <div>
                 <span className="meta-label">Leader</span>
-                <h3 style={{ margin: "8px 0" }}>{leader}</h3>
+                <h3 className="rivalry-stat-value">{leader}</h3>
               </div>
               <div>
                 <span className="meta-label">Lead margin</span>
-                <h3 style={{ margin: "8px 0" }}>{lead === 0 ? "0 pts" : `${Math.abs(lead)} pts`}</h3>
-              </div>
-              <div>
-                <span className="meta-label">Next fixture</span>
-                <strong>{data.fixture}</strong>
-              </div>
-              <div>
-                <span className="meta-label">Owners</span>
-                <strong>{data.publishing.owners.join(" and ")}</strong>
+                <h3 className="rivalry-stat-value">{lead === 0 ? "0 pts" : `${Math.abs(lead)} pts`}</h3>
               </div>
             </div>
           </div>
@@ -82,7 +74,12 @@ export default async function HomePage() {
             <p className="eyebrow">Live scoreboard</p>
             <h2 className="section-title">Today&apos;s battle</h2>
           </div>
-          <div className="score-grid">
+          <div className="battle-round-strip">
+            <span className="meta-label">Current round</span>
+            <strong className="battle-round-title">{data.fixture}</strong>
+            <span className="card-copy">Matchday date: {data.journal.date}</span>
+          </div>
+          <div className="battle-grid">
             <article className="score-card accent">
               <p className="meta-label">{user.name}</p>
               <h3 className="score-value">{user.totalPoints}</h3>
@@ -92,11 +89,6 @@ export default async function HomePage() {
               <p className="meta-label">{friend.name}</p>
               <h3 className="score-value">{friend.totalPoints}</h3>
               <p className="card-copy">{friend.summary}</p>
-            </article>
-            <article className="score-card">
-              <p className="meta-label">Current round</p>
-              <h3 style={{ margin: "8px 0 10px" }}>{data.fixture}</h3>
-              <p className="card-copy">Matchday date: {data.journal.date}</p>
             </article>
           </div>
         </section>
@@ -137,13 +129,13 @@ export default async function HomePage() {
         <section className="panel">
           <div className="section-header">
             <p className="eyebrow">Community</p>
-            <h2 className="section-title">Read, react, and pick a side</h2>
+            <h2 className="section-title">Join the blog chat</h2>
           </div>
           <div className="score-grid">
             <article className="score-card">
               <p className="meta-label">Reader profiles</p>
               <h3 style={{ margin: "8px 0 10px" }}>Claim a username</h3>
-              <p className="card-copy">Create a fan profile to keep your own name across comments and follow the rivalry day by day.</p>
+              <p className="card-copy">Make a reader profile so your comments always show up under your own name and your mentions land in one place.</p>
               <Link className="buttonGhost" href="/login">
                 Create profile
               </Link>
@@ -151,12 +143,12 @@ export default async function HomePage() {
             <article className="score-card">
               <p className="meta-label">Guest reactions</p>
               <h3 style={{ margin: "8px 0 10px" }}>Comment without signing up</h3>
-              <p className="card-copy">Every post now has an open comment thread, so readers can react even if they just drop in.</p>
+              <p className="card-copy">Just here to react to a captain pick or a meltdown post? You can still jump into any thread as a guest.</p>
             </article>
             <article className="score-card">
               <p className="meta-label">Reply chain</p>
               <h3 style={{ margin: "8px 0 10px" }}>Reply and tag other readers</h3>
-              <p className="card-copy">Replies stay threaded, and `@username` mentions land in a reader inbox so conversations don&apos;t get lost.</p>
+              <p className="card-copy">Tag other readers with `@username`, keep the banter going, and follow the conversation across every article.</p>
             </article>
           </div>
         </section>
