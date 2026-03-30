@@ -42,9 +42,12 @@ create table if not exists public.posts (
   summary text not null,
   content text not null,
   image_url text not null default '',
+  pinned boolean not null default false,
   tags_json jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
+
+alter table public.posts add column if not exists pinned boolean not null default false;
 
 create table if not exists public.comments (
   id text primary key,
@@ -77,6 +80,7 @@ create table if not exists public.notifications (
 
 create index if not exists posts_author_slug_idx on public.posts(author_slug);
 create index if not exists posts_date_idx on public.posts(date desc, created_at desc);
+create unique index if not exists posts_one_pinned_per_author_idx on public.posts(author_slug) where pinned = true;
 create unique index if not exists users_username_idx on public.users(username);
 create index if not exists comments_post_slug_idx on public.comments(post_slug, created_at);
 create index if not exists comments_parent_idx on public.comments(parent_comment_id);

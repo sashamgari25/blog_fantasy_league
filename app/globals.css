@@ -8,6 +8,12 @@
   --orange: #ff7a18;
   --gold: #ffbf47;
   --cyan: #3dd6d0;
+  --nischal: #ff9d3f;
+  --nischal-soft: rgba(255, 157, 63, 0.16);
+  --nischal-line: rgba(255, 191, 71, 0.24);
+  --shreyas: #46d3c8;
+  --shreyas-soft: rgba(70, 211, 200, 0.14);
+  --shreyas-line: rgba(70, 211, 200, 0.22);
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
 }
 
@@ -24,8 +30,9 @@ body {
   min-height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(255, 122, 24, 0.24), transparent 28%),
-    radial-gradient(circle at top right, rgba(61, 214, 208, 0.18), transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 157, 63, 0.26), transparent 28%),
+    radial-gradient(circle at top right, rgba(70, 211, 200, 0.18), transparent 24%),
+    radial-gradient(circle at bottom center, rgba(255, 191, 71, 0.06), transparent 26%),
     linear-gradient(180deg, #07111d 0%, #091524 100%);
   color: var(--text);
 }
@@ -357,6 +364,24 @@ textarea {
   background: rgba(255, 255, 255, 0.03);
 }
 
+.xi-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.xi-strip-link {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  min-width: 148px;
+}
+
 .lineup-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -375,6 +400,57 @@ textarea {
   padding: 22px;
 }
 
+.rivalry-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.rivalry-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 22px 0 0 22px;
+  opacity: 0.9;
+}
+
+.rivalry-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rivalry-card-nischal {
+  border-color: var(--nischal-line);
+  background:
+    radial-gradient(circle at top left, rgba(255, 157, 63, 0.12), transparent 34%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.rivalry-card-nischal::before {
+  background: linear-gradient(180deg, var(--orange), var(--gold));
+}
+
+.rivalry-card-shreyas {
+  border-color: var(--shreyas-line);
+  background:
+    radial-gradient(circle at top right, rgba(70, 211, 200, 0.11), transparent 36%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.rivalry-card-shreyas::before {
+  background: linear-gradient(180deg, var(--shreyas), #86eef1);
+}
+
+.rivalry-card-neutral {
+  background:
+    linear-gradient(135deg, rgba(255, 157, 63, 0.08), rgba(70, 211, 200, 0.08)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.rivalry-card-neutral::before {
+  background: linear-gradient(180deg, var(--orange), var(--shreyas));
+}
+
 .score-value {
   margin: 8px 0 10px;
   font-size: clamp(2.2rem, 5vw, 3.8rem);
@@ -384,10 +460,6 @@ textarea {
   margin: 0;
   font-size: clamp(1rem, 1.6vw, 1.2rem);
   line-height: 1.3;
-}
-
-.accent {
-  background: linear-gradient(135deg, rgba(255, 122, 24, 0.18), rgba(255, 191, 71, 0.08));
 }
 
 .tag-row,
@@ -423,6 +495,12 @@ textarea {
   background: rgba(255, 122, 24, 0.16);
   color: #ffd39c;
   border: 1px solid rgba(255, 191, 71, 0.18);
+}
+
+.meta-chip-pinned {
+  background: rgba(255, 191, 71, 0.14);
+  color: #ffe0a6;
+  border: 1px solid rgba(255, 191, 71, 0.2);
 }
 
 .list {
@@ -560,6 +638,23 @@ textarea {
   gap: 20px;
 }
 
+.pagination-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pagination-button {
+  min-width: 148px;
+}
+
+.pagination-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .comment-form {
   margin-bottom: 20px;
 }
@@ -608,6 +703,16 @@ textarea {
 
 .fieldBlock {
   display: grid;
+  gap: 10px;
+}
+
+.fieldCheckbox {
+  gap: 8px;
+}
+
+.fieldCheckboxRow {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
@@ -761,6 +866,10 @@ textarea {
   }
 
   .battle-round-strip {
+    align-items: flex-start;
+  }
+
+  .xi-strip {
     align-items: flex-start;
   }
 

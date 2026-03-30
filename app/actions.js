@@ -214,7 +214,7 @@ export async function updateAuthorOverviewAction(_prevState, formData) {
 }
 
 export async function updatePostAction(_prevState, formData) {
-  await requireAuthorSession();
+  const session = await requireAuthorSession();
 
   const postId = formData.get("post-id")?.toString().trim() || "";
   const originalSlug = formData.get("original-slug")?.toString().trim() || "";
@@ -224,6 +224,7 @@ export async function updatePostAction(_prevState, formData) {
   const summary = formData.get("summary")?.toString().trim() || "";
   const content = formData.get("content")?.toString().trim() || "";
   const imageUrl = formData.get("image-url")?.toString().trim() || "";
+  const pinned = formData.get("pinned") === "on";
   const tags = formData
     .get("tags")
     ?.toString()
@@ -235,17 +236,38 @@ export async function updatePostAction(_prevState, formData) {
     return { error: "Fill in all post fields before saving." };
   }
 
+  const existing = await getPostBySlug(originalSlug);
+  if (!existing) {
+    return { error: "Post not found." };
+  }
+
+  if (pinned && existing.authorSlug !== session.slug) {
+    return { error: "You can only pin your own posts." };
+  }
+
   const nextSlug = originalSlug === slugify(title) ? originalSlug : await buildUniqueSlug(title);
   const updated = await updatePost(postId, {
-    slug: nextSlug,
-    title,
-    date,
-    result,
-    summary,
-    content,
-    imageUrl,
-    tags
-  });
+      slug: nextSlug,
+      title,
+      date,
+      result,
+      summary,
+      content,
+      imageUrl,
+      pinned,
+      tags
+    }).catch((error) => {
+      const message = String(error?.message || error || "");
+      if (message.toLowerCase().includes("pinned")) {
+        return null;
+      }
+
+      throw error;
+    });
+
+  if (!updated) {
+    return { error: "Pinning is not available yet because the latest database schema has not been applied. Please re-run supabase/schema.sql first." };
+  }
 
   revalidatePath("/");
   revalidatePath("/dashboard");
@@ -253,7 +275,7 @@ export async function updatePostAction(_prevState, formData) {
   revalidatePath(`/posts/${updated.slug}`);
   revalidatePath(`/history/${updated.author_slug}`);
 
-  return { success: `Updated "${title}".` };
+  return { success: pinned ? `Updated "${title}" and pinned it to the archive top slot.` : `Updated "${title}".` };
 }
 
 export async function deletePostAction(_prevState, formData) {

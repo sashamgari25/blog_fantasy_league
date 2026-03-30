@@ -95,6 +95,7 @@ async function main() {
     summary: post.summary,
     content: post.content,
     image_url: post.imageUrl || "",
+    pinned: Boolean(post.pinned),
     tags_json: post.tags,
     created_at: post.date
   }));

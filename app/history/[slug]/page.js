@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getLeagueData, getPlayerBySlug, sortPosts } from "@/lib/db";
 import { buildAbsoluteUrl } from "@/lib/site";
+import { PostSearchGrid } from "@/components/post-search-grid";
 import { SiteShell, TopNav } from "@/components/site-shell";
 
 export async function generateMetadata({ params }) {
@@ -53,7 +53,7 @@ export default async function HistoryPage({ params }) {
             </h2>
             <p className="subhead">{player.bio}</p>
           </div>
-          <div className="detail-card">
+          <div className={`detail-card rivalry-card ${player.slug === "nischal" ? "rivalry-card-nischal" : "rivalry-card-shreyas"}`}>
             <p className="meta-label">Current profile</p>
             <div className="meta-row" style={{ marginTop: 16 }}>
               <span className="meta-chip">{player.style}</span>
@@ -85,34 +85,14 @@ export default async function HistoryPage({ params }) {
             <p className="eyebrow">Posts</p>
             <h2 className="section-title">Every article from {player.name}</h2>
           </div>
-          <div className="timeline-grid">
-            {posts.length ? (
-              posts.map((post) => (
-                <article className="timeline-card" key={post.id}>
-                  <div className="meta-row">
-                    <span className="meta-chip">{post.date}</span>
-                    <span className="meta-chip">{post.result}</span>
-                  </div>
-                  <div>
-                    <h3>{post.title}</h3>
-                    <p>{post.summary}</p>
-                  </div>
-                  <div className="tag-row">
-                    {post.tags.map((tag) => (
-                      <span className="tag" key={tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <Link className="buttonGhost" href={`/posts/${post.slug}`}>
-                    Open article
-                  </Link>
-                </article>
-              ))
-            ) : (
-              <div className="empty">No posts yet for this manager.</div>
-            )}
-          </div>
+          <PostSearchGrid
+            posts={posts}
+            players={data.players}
+            pageSize={6}
+            prioritizePinned
+            emptyMessage={`No posts matched ${player.name}'s archive yet.`}
+            ctaLabel="Open article"
+          />
         </section>
       </main>
     </SiteShell>

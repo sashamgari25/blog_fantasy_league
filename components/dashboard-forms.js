@@ -96,9 +96,10 @@ function AuthorOverviewForm({ session, players }) {
   );
 }
 
-function PostEditorCard({ post }) {
+function PostEditorCard({ post, session }) {
   const [state, formAction, pending] = useActionState(updatePostAction, {});
   const [deleteState, deleteFormAction, deletePending] = useActionState(deletePostAction, {});
+  const canPin = session.slug === post.authorSlug;
 
   return (
     <div className="timeline-card">
@@ -108,6 +109,7 @@ function PostEditorCard({ post }) {
         <div className="meta-row">
           <span className="meta-chip">{post.authorSlug}</span>
           <span className="meta-chip">{post.slug}</span>
+          {post.pinned ? <span className="meta-chip meta-chip-pinned">📌 Pinned</span> : null}
         </div>
         <label className="fieldBlock">
           <span>Title</span>
@@ -129,6 +131,15 @@ function PostEditorCard({ post }) {
           <span>Tags</span>
           <input className="field" name="tags" defaultValue={post.tags.join(", ")} />
         </label>
+        {canPin ? (
+          <label className="fieldBlock fieldCheckbox">
+            <span className="fieldCheckboxRow">
+              <input type="checkbox" name="pinned" defaultChecked={post.pinned} />
+              <span>Pin this post to the top-left slot on your archive</span>
+            </span>
+            <p className="field-help">Only one of your posts can stay pinned at a time.</p>
+          </label>
+        ) : null}
         <PostEditor name="content" defaultValue={post.content} />
         {state?.error ? <p className="notice">{state.error}</p> : null}
         {state?.success ? <p className="notice success">{state.success}</p> : null}
@@ -148,7 +159,7 @@ function PostEditorCard({ post }) {
   );
 }
 
-function EditPostsPanel({ posts }) {
+function EditPostsPanel({ posts, session }) {
   const [query, setQuery] = useState("");
   const filteredPosts = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -172,7 +183,7 @@ function EditPostsPanel({ posts }) {
         <input className="field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title, tag, slug, or result" />
       </label>
       <div className="timeline-grid">
-        {filteredPosts.length ? filteredPosts.map((post) => <PostEditorCard key={post.id} post={post} />) : <div className="empty">No posts matched that search.</div>}
+        {filteredPosts.length ? filteredPosts.map((post) => <PostEditorCard key={post.id} post={post} session={session} />) : <div className="empty">No posts matched that search.</div>}
       </div>
     </section>
   );
@@ -284,7 +295,7 @@ export function DashboardPanels({ session, data, posts }) {
                   <AuthorOverviewForm session={session} players={data.players} />
                 </div>
               ) : null}
-              {panel === "edit" ? <EditPostsPanel posts={posts} /> : null}
+              {panel === "edit" ? <EditPostsPanel posts={posts} session={session} /> : null}
               {panel === "search" ? <SearchLibraryPanel posts={posts} /> : null}
             </div>
           </div>

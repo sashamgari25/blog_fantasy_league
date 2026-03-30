@@ -52,7 +52,7 @@ export default async function HomePage() {
               guest comment on every article.
             </p>
           </div>
-          <div className="player-card">
+          <div className="player-card rivalry-card rivalry-card-neutral">
             <p className="eyebrow">Rivalry status</p>
             <div className="rivalry-status-grid">
               <div>
@@ -80,12 +80,12 @@ export default async function HomePage() {
             <span className="card-copy">Matchday date: {data.journal.date}</span>
           </div>
           <div className="battle-grid">
-            <article className="score-card accent">
+            <article className="score-card rivalry-card rivalry-card-nischal">
               <p className="meta-label">{user.name}</p>
               <h3 className="score-value">{user.totalPoints}</h3>
               <p className="card-copy">{user.summary}</p>
             </article>
-            <article className="score-card">
+            <article className="score-card rivalry-card rivalry-card-shreyas">
               <p className="meta-label">{friend.name}</p>
               <h3 className="score-value">{friend.totalPoints}</h3>
               <p className="card-copy">{friend.summary}</p>
@@ -93,36 +93,15 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="panel">
-          <div className="section-header">
-            <p className="eyebrow">Managers</p>
-            <h2 className="section-title">Both sides of the rivalry</h2>
-          </div>
-          <div className="card-grid" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-            {[user, friend].map((player) => (
-              <article className="post-card" key={player.slug}>
-                <div>
-                  <p className="eyebrow">{player.teamName}</p>
-                  <h3>{player.name}</h3>
-                  <p className="card-copy">{player.bio}</p>
-                </div>
-                <div className="meta-row">
-                  <span className="meta-chip">{player.style}</span>
-                  <span className="meta-chip">Captain: {player.captain}</span>
-                </div>
-                <ul className="list">
-                  {player.team.map((member) => (
-                    <li key={`${player.slug}-${member.name}`}>
-                      <span>{member.name}</span>
-                      <span className="meta-label">{member.role}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link className="buttonGhost" href={`/history/${player.slug}`}>
-                  View full history
-                </Link>
-              </article>
-            ))}
+        <section className="xi-strip">
+          <p className="eyebrow">Current XIs</p>
+          <div className="meta-row">
+            <Link className="buttonGhost xi-strip-link" href="/history/nischal">
+              Nischal XI
+            </Link>
+            <Link className="buttonGhost xi-strip-link" href="/history/shreyas">
+              Shreyas XI
+            </Link>
           </div>
         </section>
 
@@ -158,7 +137,7 @@ export default async function HomePage() {
             <p className="eyebrow">Latest posts</p>
             <h2 className="section-title">Every update gets its own page</h2>
           </div>
-          <PostSearchGrid posts={posts} players={data.players} showPreviewImages />
+          <PostSearchGrid posts={posts} players={data.players} pageSize={6} showPreviewImages />
         </section>
       </main>
     </SiteShell>
