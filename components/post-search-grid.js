@@ -60,6 +60,7 @@ export function PostSearchGrid({
         {visiblePosts.length ? (
           visiblePosts.map((post) => {
             const author = players ? Object.values(players).find((player) => player.slug === post.authorSlug) : null;
+            const postUrl = `/posts/${post.slug}`;
 
             return (
               <article
@@ -96,9 +97,10 @@ export function PostSearchGrid({
                     </span>
                   ))}
                 </div>
-                <Link className="buttonGhost" href={`/posts/${post.slug}`}>
+                <Link className="buttonGhost" href={postUrl}>
                   {ctaLabel}
                 </Link>
+                <ShareCardButton title={post.title} path={postUrl} />
               </article>
             );
           })
@@ -124,6 +126,40 @@ export function PostSearchGrid({
           </button>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function ShareCardButton({ title, path }) {
+  const [message, setMessage] = useState("");
+
+  async function handleShare() {
+    const url = `${window.location.origin}${path}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        setMessage("Shared.");
+        return;
+      } catch {
+        // Fall through.
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setMessage("Link copied.");
+    } catch {
+      setMessage("Couldn’t copy the link.");
+    }
+  }
+
+  return (
+    <div className="share-card-stack">
+      <button className="buttonGhost share-card-button" type="button" onClick={handleShare}>
+        Share
+      </button>
+      {message ? <span className="field-help">{message}</span> : null}
     </div>
   );
 }

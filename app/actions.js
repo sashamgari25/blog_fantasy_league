@@ -14,6 +14,8 @@ import {
   getLeagueData,
   getUsersByUsernames,
   getPostBySlug,
+  toggleCommentLike,
+  togglePostLike,
   updateLeagueOverview,
   updatePost
 } from "@/lib/db";
@@ -313,6 +315,39 @@ export async function deleteCommentAction(formData) {
 
   revalidatePath(`/posts/${postSlug}`);
   revalidatePath("/inbox");
+}
+
+export async function togglePostLikeAction(_prevState, formData) {
+  const session = await getSession();
+  if (!session) {
+    return { error: "Sign in to like posts." };
+  }
+
+  const postSlug = formData.get("post-slug")?.toString().trim() || "";
+  if (!postSlug) {
+    return { error: "Missing post." };
+  }
+
+  const nextState = await togglePostLike(postSlug, session.slug);
+  revalidatePath(`/posts/${postSlug}`);
+  return { ...nextState };
+}
+
+export async function toggleCommentLikeAction(_prevState, formData) {
+  const session = await getSession();
+  if (!session) {
+    return { error: "Sign in to like comments." };
+  }
+
+  const commentId = formData.get("comment-id")?.toString().trim() || "";
+  const postSlug = formData.get("post-slug")?.toString().trim() || "";
+  if (!commentId || !postSlug) {
+    return { error: "Missing comment." };
+  }
+
+  const nextState = await toggleCommentLike(commentId, session.slug);
+  revalidatePath(`/posts/${postSlug}`);
+  return { commentId, ...nextState };
 }
 
 export async function addCommentAction(_prevState, formData) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import { addCommentAction, deleteCommentAction } from "@/app/actions";
+import { addCommentAction, deleteCommentAction, toggleCommentLikeAction } from "@/app/actions";
 
 export function CommentsSection({ comments, postSlug, session }) {
   const [replyTarget, setReplyTarget] = useState(null);
@@ -64,6 +64,15 @@ export function CommentsSection({ comments, postSlug, session }) {
 }
 
 function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
+  const [likeState, likeFormAction, likePending] = useActionState(toggleCommentLikeAction, {
+    commentId: comment.id,
+    likeCount: comment.likeCount || 0,
+    likedByViewer: comment.likedByViewer || false,
+    error: ""
+  });
+  const likeCount = likeState?.commentId === comment.id ? likeState.likeCount : comment.likeCount || 0;
+  const likedByViewer = likeState?.commentId === comment.id ? likeState.likedByViewer : comment.likedByViewer || false;
+
   return (
     <article className="comment-card" style={{ marginLeft: level ? Math.min(level * 20, 40) : 0 }}>
       <div className="meta-row">
@@ -78,6 +87,13 @@ function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
         <button className="buttonGhost" type="button" onClick={() => onReply(comment)}>
           Reply
         </button>
+        <form action={likeFormAction}>
+          <input type="hidden" name="comment-id" value={comment.id} />
+          <input type="hidden" name="post-slug" value={postSlug} />
+          <button className={`buttonGhost engagement-button ${likedByViewer ? "engagement-button-active" : ""}`} type="submit" disabled={likePending}>
+            ♥ {likeCount}
+          </button>
+        </form>
         {canModerate ? (
           <form action={deleteCommentAction}>
             <input type="hidden" name="comment-id" value={comment.id} />
@@ -93,6 +109,7 @@ function CommentThread({ comment, level, onReply, postSlug, canModerate }) {
             <CommentThread key={reply.id} comment={reply} level={level + 1} onReply={onReply} postSlug={postSlug} canModerate={canModerate} />
           ))
         : null}
+      {likeState?.error ? <p className="field-help" style={{ margin: 0 }}>{likeState.error}</p> : null}
     </article>
   );
 }

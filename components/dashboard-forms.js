@@ -178,6 +178,9 @@ function EditPostsPanel({ posts, session }) {
         <p className="eyebrow">Edit published posts</p>
         <h2 className="section-title">Update existing articles</h2>
       </div>
+      <p className="field-help" style={{ marginBottom: 18 }}>
+        You can pin only your own posts, and only one of your posts can stay pinned at a time.
+      </p>
       <label className="fieldBlock" style={{ maxWidth: 460, marginBottom: 20 }}>
         <span>Search posts</span>
         <input className="field" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title, tag, slug, or result" />

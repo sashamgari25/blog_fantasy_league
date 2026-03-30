@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CommentsSection } from "@/components/comments-section";
 import { MarkdownContent } from "@/components/markdown-content";
-import { getCommentsByPostSlug, getLeagueData, getPostBySlug } from "@/lib/db";
+import { PostEngagement } from "@/components/post-engagement";
+import { getCommentsByPostSlugForUser, getLeagueData, getPostBySlug, getPostLikeState } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { buildAbsoluteUrl } from "@/lib/site";
 import { SiteShell, TopNav } from "@/components/site-shell";
@@ -38,16 +39,20 @@ export async function generateMetadata({ params }) {
 
 export default async function PostPage({ params }) {
   const { slug } = await params;
-  const [data, post, comments, session] = await Promise.all([
+  const [data, post, session] = await Promise.all([
     getLeagueData(),
     getPostBySlug(slug),
-    getCommentsByPostSlug(slug),
     getSession()
   ]);
 
   if (!post) {
     notFound();
   }
+
+  const [comments, likeState] = await Promise.all([
+    getCommentsByPostSlugForUser(slug, session?.slug || null),
+    getPostLikeState(slug, session?.slug || null)
+  ]);
 
   const author = Object.values(data.players).find((player) => player.slug === post.authorSlug);
   const articleSchema = {
@@ -90,6 +95,13 @@ export default async function PostPage({ params }) {
               </span>
             ))}
           </div>
+          <PostEngagement
+            postSlug={post.slug}
+            postTitle={post.title}
+            initialLikeCount={likeState.likeCount}
+            initialLikedByViewer={likeState.likedByViewer}
+            isSignedIn={Boolean(session)}
+          />
         </div>
       </header>
 

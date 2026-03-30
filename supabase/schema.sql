@@ -65,6 +65,20 @@ alter table public.comments add column if not exists parent_comment_id text refe
 alter table public.comments add column if not exists author_username text;
 alter table public.comments add column if not exists author_role text not null default 'guest';
 
+create table if not exists public.post_likes (
+  post_slug text not null references public.posts(slug) on delete cascade,
+  user_slug text not null references public.users(slug) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (post_slug, user_slug)
+);
+
+create table if not exists public.comment_likes (
+  comment_id text not null references public.comments(id) on delete cascade,
+  user_slug text not null references public.users(slug) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (comment_id, user_slug)
+);
+
 create table if not exists public.notifications (
   id text primary key,
   reader_slug text not null references public.users(slug) on delete cascade,
@@ -84,6 +98,8 @@ create unique index if not exists posts_one_pinned_per_author_idx on public.post
 create unique index if not exists users_username_idx on public.users(username);
 create index if not exists comments_post_slug_idx on public.comments(post_slug, created_at);
 create index if not exists comments_parent_idx on public.comments(parent_comment_id);
+create index if not exists post_likes_post_slug_idx on public.post_likes(post_slug);
+create index if not exists comment_likes_comment_id_idx on public.comment_likes(comment_id);
 create index if not exists notifications_reader_created_idx on public.notifications(reader_slug, created_at desc);
 
 insert into public.league_state (id, fixture, journal_date)
