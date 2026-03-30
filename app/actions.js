@@ -14,6 +14,7 @@ import {
   getLeagueData,
   getUsersByUsernames,
   getPostBySlug,
+  setPostLike,
   toggleCommentLike,
   togglePostLike,
   updateLeagueOverview,
@@ -324,11 +325,15 @@ export async function togglePostLikeAction(_prevState, formData) {
   }
 
   const postSlug = formData.get("post-slug")?.toString().trim() || "";
+  const desiredLikedRaw = formData.get("desired-liked")?.toString().trim();
   if (!postSlug) {
     return { error: "Missing post." };
   }
 
-  const nextState = await togglePostLike(postSlug, session.slug);
+  const nextState =
+    desiredLikedRaw === "true" || desiredLikedRaw === "false"
+      ? await setPostLike(postSlug, session.slug, desiredLikedRaw === "true")
+      : await togglePostLike(postSlug, session.slug);
   revalidatePath(`/posts/${postSlug}`);
   return { ...nextState };
 }
