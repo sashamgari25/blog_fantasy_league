@@ -31,6 +31,11 @@ export const metadata = {
   },
   description: "Track the IPL Fantasy Faceoff rivalry with daily posts, current XIs, reader comments, and matchday reactions.",
   applicationName: "IPL Fantasy Faceoff",
+  
+  other: {
+    "google-adsense-account": "ca-pub-6307552745755125"
+  },
+  
   keywords: [
     "IPL fantasy",
     "fantasy cricket blog",
